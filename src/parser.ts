@@ -1,5 +1,5 @@
 import * as Enumerable from "linq-es2015"; 
-import {Task, Group, Milestone, RenderOptions, GanttInfo} from "./ganttDb";
+import {Task, Group, Milestone, GanttInfo} from "./ganttDb";
 
 export class Parser{
 
