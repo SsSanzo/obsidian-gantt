@@ -43,7 +43,7 @@ export class Parser{
             else if(line.startsWith(Parser.KEYWORD_MILESTONE)){
                 this.ParseMilestone(line.substring(Parser.KEYWORD_MILESTONE.length), current_group);
 
-            }else if(line.startsWith(Parser.KEYWORD_COMMENT)){
+            }else if(line.startsWith(Parser.KEYWORD_COMMENT) || line.length<1){
                 null;
             }else{
                 throw new Error(
@@ -116,9 +116,15 @@ export class Parser{
     }
 
     ParseDate(date_str:string): Date{
-        if(!date_str.contains(Parser.KEYWORD_AFTER)) return new Date(date_str);
+        if(!date_str.contains(Parser.KEYWORD_AFTER) && !date_str.startsWith(Parser.KEYWORD_AFTER.trim())) return new Date(date_str);
 
-        const elements = date_str.split(Parser.KEYWORD_AFTER);
+        let elements:Array<string>;
+        if(date_str.startsWith(Parser.KEYWORD_AFTER.trim())){
+            elements = ["", date_str.substring(Parser.KEYWORD_AFTER.length-1)];
+        }else{
+            elements = date_str.split(Parser.KEYWORD_AFTER);
+        }
+        
         if(elements.length != 2) throw new Error("Syntax error on '" + date_str + "'. Syntax should be '1d" + Parser.KEYWORD_AFTER + "taskId' where 1d is an example of a duration (number+unit of time)");
         
         elements[0] = elements[0].trim();
@@ -128,10 +134,10 @@ export class Parser{
         const previousTask = Enumerable.AsEnumerable(this.ganttInfo.tasks).FirstOrDefault((task:Task) => task.ID == elements[1]);
         const previousMilestone = Enumerable.AsEnumerable(this.ganttInfo.milestones).FirstOrDefault((task:Milestone) => task.ID == elements[1]);
         
-        if(previousMilestone.ID.length<1 && previousTask.ID.length<1) throw new Error("ElementNotFound on '" + date_str + "'. Element '" + elements[1] + "' not defined as a task or milestone");
+        if(previousMilestone== null && previousTask == null) throw new Error("ElementNotFound on '" + date_str + "'. Element '" + elements[1] + "' not defined as a task or milestone");
         
         let previousDate: Date;
-        if(previousTask.ID.length>0) previousDate = previousTask.EndDate;
+        if(previousTask!= null) previousDate = previousTask.EndDate;
         else previousDate = previousMilestone.StartDate;
         
         return this.ParseDuration(elements[0], previousDate);
@@ -149,11 +155,11 @@ export class Parser{
         ];
         if(!Enumerable.AsEnumerable(keywordList).Any((keyword) => duration.contains(keyword))) throw new Error("UnknownUnit in '" + duration + "'. The unit should be one of the following: " + keywordList.join(", "));
         
-        const keyword = duration.at(duration.length-1);
+        const keyword = duration.substring(duration.length-1);
         const amount = new Number(duration.substring(0, duration.length-1)).valueOf();
         if(Number.isNaN(amount)) throw new Error("Syntax Error on '" + amount + "'.It should be a number.");
 
-        const date = from;
+        const date: Date = new Date(from.valueOf());
         switch (keyword) {
             case Parser.KEYWORD_DURATION_DAY:
                 date.setDate(date.getDate() + amount);
