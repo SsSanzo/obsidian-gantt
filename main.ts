@@ -30,6 +30,10 @@ export default class MyPlugin extends Plugin {
 				parser.Parse(source);
 			
 				const renderer = new Renderer(parser.ganttInfo);
+				//renderer.width = element.parentElement.clientWidth;
+				//renderer.height = element.parentElement.clientHeight;
+				renderer.width = element.ownerDocument.getElementsByClassName("view-content")[0].clientWidth;
+
 				const graph = renderer.Render();
 
 				element.appendChild(graph);

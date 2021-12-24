@@ -1,0 +1,19 @@
+.grid line {
+    color: #ccc;
+}
+
+.group-block rect {
+    opacity: 25%;
+}
+
+.group-block rect.even {
+    fill: #999;
+}
+
+.group-block rect.odd {
+    fill: #777;
+}
+
+.group-block-label text {
+    fill: white;
+}
