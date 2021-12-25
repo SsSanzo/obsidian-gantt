@@ -17,3 +17,21 @@
 .group-block-label text {
     fill: white;
 }
+
+.tasks-labels text {
+    fill: white;
+    text-anchor: middle;
+}
+
+.tasks rect {
+    fill: darkcyan;
+}
+
+.milestones-labels text {
+    fill: white;
+    text-anchor: middle;
+}
+
+.milestones rect {
+    fill: darkcyan;
+}

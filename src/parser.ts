@@ -30,17 +30,17 @@ export class Parser{
 
         lines.forEach(line => {
 
-            if(line.startsWith(Parser.KEYWORD_OPTION)){
+            if(line.toLocaleLowerCase().startsWith(Parser.KEYWORD_OPTION)){
                 this.ParseOption(line.substring(Parser.KEYWORD_OPTION.length));
 
-            }else if(line.startsWith(Parser.KEYWORD_GROUP)){
+            }else if(line.toLocaleLowerCase().startsWith(Parser.KEYWORD_GROUP)){
                 current_group = this.ParseGroup(line.substring(Parser.KEYWORD_GROUP.length));
 
-            }else if(line.startsWith(Parser.KEYWORD_TASK)){
+            }else if(line.toLocaleLowerCase().startsWith(Parser.KEYWORD_TASK)){
                 this.ParseTask(line.substring(Parser.KEYWORD_TASK.length), current_group);
 
             }
-            else if(line.startsWith(Parser.KEYWORD_MILESTONE)){
+            else if(line.toLocaleLowerCase().startsWith(Parser.KEYWORD_MILESTONE)){
                 this.ParseMilestone(line.substring(Parser.KEYWORD_MILESTONE.length), current_group);
 
             }else if(line.startsWith(Parser.KEYWORD_COMMENT) || line.length<1){
@@ -63,10 +63,10 @@ export class Parser{
     }
 
     ParseOption(line:string):void{
-        const elements = Enumerable.AsEnumerable(line.split(" ")).Where((e:string) => e.length>0);
-        if(elements.Count()<2) return;
-        const key = elements.ElementAt(0);
-        const value = elements.Range(1, elements.Count()-1).ToArray().join(" ");
+        const elements = Enumerable.AsEnumerable(line.split(" ")).Where((e:string) => e.length>0).ToArray();
+        if(elements.length<2) return;
+        const key = elements[0].toLocaleLowerCase();
+        const value = elements.slice(1).join(" ");
         this.ganttInfo.renderOptions.options.set(key, value);
     }
 
