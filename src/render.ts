@@ -6,6 +6,7 @@ export class Renderer{
     static KEYWORD_AXISTICKS = "axisticks";
     static KEYWORD_TITLE = "title";
     static KEYWORD_TODAYMARKER = "todaymarker";
+    static KEYWORD_DEPENDENCIES = "dependencies";
 
     ganttInfo: GanttInfo;
     startDate: Date;
@@ -133,34 +134,7 @@ export class Renderer{
     }
 
     RenderEvents(svg: d3.Selection<SVGSVGElement, undefined, null, undefined>):void{
-        const tasks = Enumerable
-                        .AsEnumerable(this.ganttInfo.tasks)
-                        .Select((t) => new Map<string, unknown>([
-                            ["name", t.Title], 
-                            ["class", t.Class], 
-                            ["progress", t.Progress],
-                            ["start", t.StartDate],
-                            ["end", t.EndDate],
-                            ["type", "task"],
-                            ["group_index", this.ganttInfo.groups.indexOf(t.Group)]
-                        ]));
-        const milestones = Enumerable.AsEnumerable(this.ganttInfo.milestones)
-                        .Select((m) => new Map<string, unknown>([
-                            ["name", m.Title], 
-                            ["class", m.Class], 
-                            ["progress", m.Progress],
-                            ["start", m.StartDate],
-                            ["type", "milestone"],
-                            ["group_index", this.ganttInfo.groups.indexOf(m.Group)]
-                        ]));
-        const events = tasks.Concat(milestones)
-                        .OrderBy((e) => (e.get("start") as Date).valueOf()*(e.get("group_index") as number + 1))
-                        .ToArray();
-
-        for (let i = 0; i < events.length; i++) {
-            const event = events[i];
-            event.set("position", i);
-        }
+        const events = this.MakeEventArrayWithDependencies();
 
         this.RenderTasks(svg,
             Enumerable.AsEnumerable(events).Where((e) => e.get("type") as string == "task").ToArray()
@@ -244,10 +218,176 @@ export class Renderer{
     }
 
     RenderDependencies(svg: d3.Selection<SVGSVGElement, undefined, null, undefined>):void{
+        if(!this.ganttInfo.renderOptions.options.has(Renderer.KEYWORD_DEPENDENCIES)) return;
+        if((this.ganttInfo.renderOptions.options.get(Renderer.KEYWORD_DEPENDENCIES) as string).toLocaleLowerCase() != "on") return;
 
+        const events = this.MakeEventArrayWithDependencies();
+        const dependencies = this.MakeDependenciesArray(events);
+        const paths = this.BuildDependencyPath(events, dependencies);
+
+        svg.append("g")
+            .attr("class", "dependencies")
+            .selectAll("path")
+            .data(paths)
+            .enter()
+                .append("path")
+                .attr("d", (d) => d);
     }
 
     DateToPosition(date: Date):number{
         return (date.valueOf()-this.startDate.valueOf())/(this.endDate.valueOf()-this.startDate.valueOf()) * this.widthScale;
     }
+
+    MakeEventArrayWithDependencies():Array<Map<string, unknown>>{
+        const tasks = Enumerable
+                        .AsEnumerable(this.ganttInfo.tasks)
+                        .Select((t) => new Map<string, unknown>([
+                            ["name", t.Title], 
+                            ["class", t.Class], 
+                            ["progress", t.Progress],
+                            ["ID", t.ID], 
+                            ["start", t.StartDate],
+                            ["end", t.EndDate],
+                            ["type", "task"],
+                            ["dependsOn", t.Dependencies],
+                            ["group_index", this.ganttInfo.groups.indexOf(t.Group)]
+                        ]));
+        const milestones = Enumerable.AsEnumerable(this.ganttInfo.milestones)
+                        .Select((m) => new Map<string, unknown>([
+                            ["name", m.Title], 
+                            ["class", m.Class], 
+                            ["progress", m.Progress],
+                            ["ID", m.ID], 
+                            ["start", m.StartDate],
+                            ["type", "milestone"],
+                            ["dependsOn", m.Dependencies],
+                            ["group_index", this.ganttInfo.groups.indexOf(m.Group)]
+                        ]));
+        const events = tasks.Concat(milestones)
+                        .OrderBy((e) => (e.get("start") as Date).valueOf()*(e.get("group_index") as number + 1))
+                        .ToArray();  
+
+        for (let i = 0; i < events.length; i++) {
+            const event = events[i];
+            event.set("position", i);
+        }
+
+        return events;
+    }
+
+    MakeDependenciesArray(events: Array<Map<string, unknown>>):Array<Array<string>>{
+        const dependencies = new Array<Array<string>>();
+        events.forEach(event => {
+            //const dependsOn = (event.get("dependsOn") as string).trim();
+            //if(dependsOn.length>0){
+            //    const dependants = dependsOn.split(",");
+            const dependants = event.get("dependsOn") as Array<string>;
+                if(Array.isArray(dependants) && dependants != null)
+                    dependants.forEach(from => {
+                        from = from.trim();
+                        if(from.length>0 && Enumerable.AsEnumerable(events).Any((e) => (e.get("ID") as string) == from))
+                            dependencies.push([from.trim(), event.get("ID") as string]);
+                        else
+                            throw new Error("Error: Task Not Found '" + from + "' on '" + event.get("ID") as string + "'");
+                    });
+            //}
+        });
+
+        return dependencies;
+    }
+
+    BuildDependencyPath(events: Array<Map<string, unknown>>, dependencies: Array<Array<string>>):Array<string>{
+        const paths: Array<string> = [];
+        const eventsEnumerable = Enumerable.AsEnumerable(events);
+        dependencies.forEach(dependency => {
+            const from = eventsEnumerable.First((e) => (e.get("ID") as string) == dependency[0]);
+            const to = eventsEnumerable.First((e) => (e.get("ID") as string) == dependency[1]);
+
+            const toDate = this.DateToPosition(to.get("start") as Date);
+            const fromStartDate = this.DateToPosition(from.get("start") as Date);
+            let fromEndDate = 0;
+            if((from.get("type") as string) == "task"){
+                fromEndDate = this.DateToPosition(from.get("end") as Date);
+            }else{
+                fromEndDate = fromStartDate;
+            }
+
+            let path = "";
+            if(toDate <= fromStartDate){
+                //snake
+            }else{
+                const startingPoint = new Point(0, 0);
+                const beforeTurnPoint = new Point(0, 0);
+                const afterTurnPoint = new Point(0, 0);
+                const endingTurnPoint = new Point(0, 0);
+
+                startingPoint.y = (from.get("position") as number + 1)/(this.numberOfItems+2)*this.height + this.taskHeight;
+                if(toDate>=fromEndDate){
+                    startingPoint.x = fromStartDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + (fromEndDate - fromStartDate)*this.width*(1-this.groupColumnSize)*0.95;
+                }else{
+                    startingPoint.x = fromStartDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + (toDate - fromStartDate)*this.width*(1-this.groupColumnSize)*0.95;
+                }
+
+                //controlStartingPoint.x = startingPoint.x;
+                //controlStartingPoint.y = startingPoint.x+1;
+                const controlStartingPoint = startingPoint.Add(0, 1);
+
+                beforeTurnPoint.x = startingPoint.x;
+                beforeTurnPoint.y = (to.get("position") as number + 1)/(this.numberOfItems+2)*this.height;
+
+                //controlBeforeTurnPoint.x = beforeTurnPoint.x;
+                //controlBeforeTurnPoint.y = beforeTurnPoint.y + this.taskHeight+this.taskpadding*2;
+                const controlBeforeTurnPoint = beforeTurnPoint.Add(0, this.taskHeight+this.taskpadding*2);
+
+                afterTurnPoint.x = beforeTurnPoint.x + this.taskHeight+this.taskpadding*2;
+                afterTurnPoint.y = beforeTurnPoint.y + this.taskHeight/2.0+this.taskpadding;
+
+                //controlAfterTurnPoint.x = afterTurnPoint.x - this.taskHeight - this.taskpadding*2;
+                //controlAfterTurnPoint.y = afterTurnPoint.y;
+                const controlAfterTurnPoint = afterTurnPoint.Add( this.taskHeight - this.taskpadding*2, 0);
+
+                endingTurnPoint.x =  toDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize;
+                endingTurnPoint.y = afterTurnPoint.y;
+
+                //controlEndingTurnPoint.x = endingTurnPoint.x-1;
+                //controlEndingTurnPoint.y = endingTurnPoint.y;
+                const controlEndingTurnPoint = endingTurnPoint.Add(-1, 0);
+            
+                
+                /*path = "M" + startingPoint + " " +
+                    "C" + controlStartingPoint + " " +
+                    controlBeforeTurnPoint + " " +
+                    beforeTurnPoint + " " +
+                    "S" + controlAfterTurnPoint + " " +
+                    afterTurnPoint + " " +
+                    "S" + controlEndingTurnPoint + " " +
+                    endingTurnPoint;*/
+                
+                path =  "M" + startingPoint + " " +
+                        "L" + beforeTurnPoint + " " +
+                        //"C" + controlBeforeTurnPoint + " " + controlAfterTurnPoint + " " + afterTurnPoint + " " +
+                        "L" + endingTurnPoint;
+
+            }
+            paths.push(path);
+        });
+
+        return paths;
+    }
+}
+
+class Point{
+    public x: number;
+    public y: number;
+
+    constructor(x:number, y:number){
+        this.x=x;
+        this.y=y;
+    }
+
+    public Add(x: number, y:number):Point{
+        return new Point(this.x+x, this.y+y);
+    }
+
+    public toString = (): string => this.x.toFixed(0) + " " + this.y.toFixed(0);
 }

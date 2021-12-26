@@ -1,37 +1,47 @@
-.grid line {
+.block-language-gantt .grid line {
     color: #ccc;
 }
 
-.group-block rect {
+.block-language-gantt .group-block rect {
     opacity: 25%;
 }
 
-.group-block rect.even {
+.block-language-gantt .group-block rect.even {
     fill: #999;
 }
 
-.group-block rect.odd {
+.block-language-gantt .group-block rect.odd {
     fill: #777;
 }
 
-.group-block-label text {
+.block-language-gantt .group-block-label text {
     fill: white;
 }
 
-.tasks-labels text {
-    fill: white;
-    text-anchor: middle;
-}
-
-.tasks rect {
-    fill: darkcyan;
-}
-
-.milestones-labels text {
+.block-language-gantt .tasks-labels text {
     fill: white;
     text-anchor: middle;
 }
 
-.milestones rect {
+.block-language-gantt .tasks rect {
     fill: darkcyan;
+}
+
+.block-language-gantt .milestones-labels text {
+    fill: white;
+    text-anchor: middle;
+}
+
+.block-language-gantt .milestones rect {
+    fill: darkcyan;
+}
+
+.block-language-gantt .today-marker line {
+    stroke: brown;
+    stroke-width: 2px;
+}
+
+.dependencies path {
+    stroke-width: 2px;
+    stroke: lightseagreen;
 }
