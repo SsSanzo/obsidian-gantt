@@ -28,22 +28,46 @@ export class Renderer{
     }
 
     initDate():void{
-        const milestoneDates = Enumerable.AsEnumerable(this.ganttInfo.milestones).Select((milestone) => milestone.StartDate);
-        const milestoneStartDate = milestoneDates.Min((d:Date) => d.valueOf());
-        const milestoneEndDate = milestoneDates.Max((d:Date) => d.valueOf());
-
-        const taskStartDate = Enumerable.AsEnumerable(this.ganttInfo.tasks).Select((task) => task.StartDate).Min((d:Date) => d.valueOf())
-        const taskEndDate = Enumerable.AsEnumerable(this.ganttInfo.tasks).Select((task) => task.EndDate).Max((d:Date) => d.valueOf());
-
-        if(milestoneStartDate<taskStartDate)
-            this.startDate = new Date(milestoneStartDate);
-        else
-            this.startDate = new Date(taskStartDate);
         
-        if(milestoneEndDate>taskEndDate)
+        let milestoneStartDate: number;
+        let milestoneEndDate: number;
+        if(this.ganttInfo.milestones.length>0){
+            const milestoneDates = Enumerable.AsEnumerable(this.ganttInfo.milestones).Select((milestone) => milestone.StartDate);
+            milestoneStartDate = milestoneDates.Min((d:Date) => d.valueOf());
+            milestoneEndDate = milestoneDates.Max((d:Date) => d.valueOf());
+        }
+
+        let taskStartDate: number;
+        let taskEndDate: number;
+        if(this.ganttInfo.tasks.length>0){
+            taskStartDate = Enumerable.AsEnumerable(this.ganttInfo.tasks).Select((task) => task.StartDate).Min((d:Date) => d.valueOf());
+            taskEndDate = Enumerable.AsEnumerable(this.ganttInfo.tasks).Select((task) => task.EndDate).Max((d:Date) => d.valueOf());
+        }
+
+        if(this.ganttInfo.tasks.length<1 && this.ganttInfo.milestones.length<1){
+            this.startDate = new Date();
+            this.endDate = new Date();
+        }else if(this.ganttInfo.tasks.length<1 && this.ganttInfo.milestones.length>0){
+            this.startDate = new Date(milestoneStartDate);
             this.endDate = new Date(milestoneEndDate);
-        else
+        }else if(this.ganttInfo.tasks.length>0 && this.ganttInfo.milestones.length<1){
+            this.startDate = new Date(taskStartDate);
             this.endDate = new Date(taskEndDate);
+            return;
+        }else{
+
+            if(milestoneStartDate<taskStartDate)
+                this.startDate = new Date(milestoneStartDate);
+            else
+                this.startDate = new Date(taskStartDate);
+            
+            if(milestoneEndDate>taskEndDate)
+                this.endDate = new Date(milestoneEndDate);
+            else
+                this.endDate = new Date(taskEndDate);
+        }
+        
+        if(this.startDate.valueOf() == this.endDate.valueOf()) this.endDate.setDate(this.endDate.getDate()+1);
     }
 
     initiateNbItems():void{
@@ -65,10 +89,21 @@ export class Renderer{
         this.RenderTodayMarker(svg);
         this.RenderEvents(svg);
         this.RenderDependencies(svg);
-        //Render Title
+        this.RenderTitle(svg);
         //Render popup details
 
         return svg.node();
+    }
+
+    RenderTitle(svg: d3.Selection<SVGSVGElement, undefined, null, undefined>): void{
+        if(!this.ganttInfo.renderOptions.options.has(Renderer.KEYWORD_TITLE)) return;
+        const title = this.ganttInfo.renderOptions.options.get(Renderer.KEYWORD_TITLE) as string;
+
+        svg.append("text")
+            .attr("class", "title")
+            .attr("x", this.width/2.0)
+            .attr("y", 20)
+            .text(title);
     }
 
     RenderGrid(svg: d3.Selection<SVGSVGElement, undefined, null, undefined>): void{
@@ -231,7 +266,8 @@ export class Renderer{
             .data(paths)
             .enter()
                 .append("path")
-                .attr("d", (d) => d);
+                .attr("d", (d) => d[0])
+                .attr("class", (d) => d[1]);
     }
 
     DateToPosition(date: Date):number{
@@ -278,26 +314,22 @@ export class Renderer{
     MakeDependenciesArray(events: Array<Map<string, unknown>>):Array<Array<string>>{
         const dependencies = new Array<Array<string>>();
         events.forEach(event => {
-            //const dependsOn = (event.get("dependsOn") as string).trim();
-            //if(dependsOn.length>0){
-            //    const dependants = dependsOn.split(",");
             const dependants = event.get("dependsOn") as Array<string>;
-                if(Array.isArray(dependants) && dependants != null)
-                    dependants.forEach(from => {
-                        from = from.trim();
-                        if(from.length>0 && Enumerable.AsEnumerable(events).Any((e) => (e.get("ID") as string) == from))
-                            dependencies.push([from.trim(), event.get("ID") as string]);
-                        else
-                            throw new Error("Error: Task Not Found '" + from + "' on '" + event.get("ID") as string + "'");
-                    });
-            //}
+            if(Array.isArray(dependants) && dependants != null)
+                dependants.forEach(from => {
+                    from = from.trim();
+                    if(from.length>0 && Enumerable.AsEnumerable(events).Any((e) => (e.get("ID") as string) == from))
+                        dependencies.push([from.trim(), event.get("ID") as string]);
+                    else
+                        throw new Error("Error: Task Not Found '" + from + "' on '" + event.get("ID") as string + "'");
+                });
         });
 
         return dependencies;
     }
 
-    BuildDependencyPath(events: Array<Map<string, unknown>>, dependencies: Array<Array<string>>):Array<string>{
-        const paths: Array<string> = [];
+    BuildDependencyPath(events: Array<Map<string, unknown>>, dependencies: Array<Array<string>>):Array<Array<string>>{
+        const paths: Array<Array<string>> = [];
         const eventsEnumerable = Enumerable.AsEnumerable(events);
         dependencies.forEach(dependency => {
             const from = eventsEnumerable.First((e) => (e.get("ID") as string) == dependency[0]);
@@ -314,62 +346,61 @@ export class Renderer{
 
             let path = "";
             if(toDate <= fromStartDate){
-                //snake
+                //Snake curve
+                //Should not be possible - leave for later
             }else{
+                //straight curve
                 const startingPoint = new Point(0, 0);
                 const beforeTurnPoint = new Point(0, 0);
                 const afterTurnPoint = new Point(0, 0);
-                const endingTurnPoint = new Point(0, 0);
+                const endingPoint = new Point(0, 0);
 
-                startingPoint.y = (from.get("position") as number + 1)/(this.numberOfItems+2)*this.height + this.taskHeight;
-                if(toDate>=fromEndDate){
-                    startingPoint.x = fromStartDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + (fromEndDate - fromStartDate)*this.width*(1-this.groupColumnSize)*0.95;
+                if((from.get("position") as number) < (to.get("position") as number)){
+                    startingPoint.y = (from.get("position") as number + 1)/(this.numberOfItems+2)*this.height + this.taskHeight - this.taskpadding;
                 }else{
-                    startingPoint.x = fromStartDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + (toDate - fromStartDate)*this.width*(1-this.groupColumnSize)*0.95;
+                    startingPoint.y = (from.get("position") as number + 1)/(this.numberOfItems+2)*this.height + this.taskpadding;
+                }
+                
+                if(toDate>=fromEndDate){
+                    startingPoint.x = fromStartDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + (fromEndDate - fromStartDate)*this.width*(1-this.groupColumnSize)*0.75;
+                }else{
+                    startingPoint.x = fromStartDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + (toDate - fromStartDate)*this.width*(1-this.groupColumnSize)*0.75;
                 }
 
-                //controlStartingPoint.x = startingPoint.x;
-                //controlStartingPoint.y = startingPoint.x+1;
-                const controlStartingPoint = startingPoint.Add(0, 1);
+                endingPoint.x =  toDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize;
+                endingPoint.y = (to.get("position") as number + 1)/(this.numberOfItems+2)*this.height + this.taskHeight/2.0;
+
+                if((to.get("type") as string) == "milestone"){
+                    endingPoint.x -= this.taskHeight*0.65;
+                }
 
                 beforeTurnPoint.x = startingPoint.x;
-                beforeTurnPoint.y = (to.get("position") as number + 1)/(this.numberOfItems+2)*this.height;
+                if((from.get("position") as number) < (to.get("position") as number)){
+                    beforeTurnPoint.y = endingPoint.y - this.taskHeight/2.0 - this.taskpadding;
+                }else{
+                    beforeTurnPoint.y = endingPoint.y + this.taskHeight/2.0 + this.taskpadding;
+                }
 
-                //controlBeforeTurnPoint.x = beforeTurnPoint.x;
-                //controlBeforeTurnPoint.y = beforeTurnPoint.y + this.taskHeight+this.taskpadding*2;
-                const controlBeforeTurnPoint = beforeTurnPoint.Add(0, this.taskHeight+this.taskpadding*2);
+                afterTurnPoint.x = Math.min(startingPoint.x + this.taskHeight, endingPoint.x);
+                afterTurnPoint.y = endingPoint.y;
 
-                afterTurnPoint.x = beforeTurnPoint.x + this.taskHeight+this.taskpadding*2;
-                afterTurnPoint.y = beforeTurnPoint.y + this.taskHeight/2.0+this.taskpadding;
-
-                //controlAfterTurnPoint.x = afterTurnPoint.x - this.taskHeight - this.taskpadding*2;
-                //controlAfterTurnPoint.y = afterTurnPoint.y;
-                const controlAfterTurnPoint = afterTurnPoint.Add( this.taskHeight - this.taskpadding*2, 0);
-
-                endingTurnPoint.x =  toDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize;
-                endingTurnPoint.y = afterTurnPoint.y;
-
-                //controlEndingTurnPoint.x = endingTurnPoint.x-1;
-                //controlEndingTurnPoint.y = endingTurnPoint.y;
-                const controlEndingTurnPoint = endingTurnPoint.Add(-1, 0);
-            
-                
-                /*path = "M" + startingPoint + " " +
-                    "C" + controlStartingPoint + " " +
-                    controlBeforeTurnPoint + " " +
-                    beforeTurnPoint + " " +
-                    "S" + controlAfterTurnPoint + " " +
-                    afterTurnPoint + " " +
-                    "S" + controlEndingTurnPoint + " " +
-                    endingTurnPoint;*/
+                const controlBeforeTurnPoint = new Point(beforeTurnPoint.x, afterTurnPoint.y);
+                const controlAfterTurnPoint = controlBeforeTurnPoint.Add(0, 0);
                 
                 path =  "M" + startingPoint + " " +
                         "L" + beforeTurnPoint + " " +
-                        //"C" + controlBeforeTurnPoint + " " + controlAfterTurnPoint + " " + afterTurnPoint + " " +
-                        "L" + endingTurnPoint;
+                        "C" + controlBeforeTurnPoint + " " + controlAfterTurnPoint + " " + afterTurnPoint + " " +
+                        "L" + endingPoint;
+                
+                paths.push([path, to.get("class") as string + " path"]);
 
+                const arrowHead =   "M" + endingPoint + " " +
+                                    "L" + endingPoint.Add(-10,5) + " " +
+                                    "L" + endingPoint.Add(-10,-5) + " " +
+                                    "Z";
+                
+                paths.push([arrowHead, to.get("class") as string + " arrow-head"]);
             }
-            paths.push(path);
         });
 
         return paths;

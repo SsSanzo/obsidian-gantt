@@ -16,11 +16,13 @@
 
 .block-language-gantt .group-block-label text {
     fill: white;
+    font-size: 1em;
 }
 
 .block-language-gantt .tasks-labels text {
     fill: white;
     text-anchor: middle;
+    font-size: 0.8em;
 }
 
 .block-language-gantt .tasks rect {
@@ -30,10 +32,13 @@
 .block-language-gantt .milestones-labels text {
     fill: white;
     text-anchor: middle;
+    font-size: 0.7em;
 }
 
 .block-language-gantt .milestones rect {
     fill: darkcyan;
+    stroke: #aaa;
+    stroke-width: 1px;
 }
 
 .block-language-gantt .today-marker line {
@@ -43,5 +48,18 @@
 
 .dependencies path {
     stroke-width: 2px;
-    stroke: lightseagreen;
+    stroke: #c7254e;
+    fill: none;
+}
+
+.dependencies path.arrow-head {
+    stroke: none;
+    fill: #c7254e;
+}
+
+text.title{
+    fill: #ddd;
+    text-anchor: middle;
+    font-size: 1.5em;
+    font-weight: bold;
 }
