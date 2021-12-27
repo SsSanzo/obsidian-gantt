@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewbox="0,0,1402.2,300" width="1402.2" height="300">
+<style>/* <![CDATA[ */
+/* GRID */
+.grid line {
+    color: #ccc;
+}
+
+/* GROUP BLOCK */
+.group-block rect {
+    opacity: 25%;
+}
+
+.group-block rect.even {
+    fill: #999;
+}
+
+.group-block rect.odd {
+    fill: #777;
+}
+
+.group-block-label text {
+    fill: white;
+    font-size: 1em;
+}
+
+/* TASKS */
+.tasks-labels text {
+    fill: white;
+    text-anchor: middle;
+    font-size: 0.8em;
+}
+
+.tasks-labels tspan {
+    text-anchor: middle;
+}
+
+.tasks rect {
+    fill: rgb(30, 41, 41);
+}
+
+.tasks rect[onclick^=document],
+.tasks-labels text[onclick^=document] {
+    cursor: pointer;
+}
+
+/* MILESTONES */
+.milestones-labels text {
+    fill: white;
+    text-anchor: middle;
+    font-size: 0.7em;
+}
+
+.milestones rect {
+    fill: darkcyan;
+    stroke: #aaa;
+    stroke-width: 1px;
+}
+
+.milestones rect[onclick^=document],
+.milestones-labels text[onclick^=document] {
+    cursor: pointer;
+}
+
+/* TODAY MARKER */
+.today-marker line {
+    stroke: brown;
+    stroke-width: 2px;
+}
+
+/* DEPENDENCIES */
+.dependencies path {
+    stroke-width: 2px;
+    stroke: #c7254e;
+    fill: none;
+}
+
+.dependencies path.arrow-head {
+    stroke: none;
+    fill: #c7254e;
+}
+
+/* TITLE */
+text.title{
+    fill: #ddd;
+    text-anchor: middle;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* CUSTOM CLASSES */
+.tasks rect.in-progress, 
+.milestones rect.in-progress, 
+.dependencies path.arrow-head.in-progress {
+    fill: #ff9200;
+}
+
+.dependencies path.in-progress {
+    stroke: #ff9200;
+}
+
+.tasks rect.done, 
+.milestones rect.done,
+.dependencies path.arrow-head.done {
+    fill: #2da023;
+}
+
+.dependencies path.done {
+    stroke: #2da023;
+}
+
+.tasks rect.pending, 
+.milestones rect.pending,
+.dependencies path.arrow-head.pending {
+    fill: #2378a0;
+}
+
+.dependencies path.pending {
+    stroke: #2378a0;
+}
+
+.tasks rect.critical, 
+.milestones rect.critical,
+.dependencies path.arrow-head.critical {
+    fill: #a02323;
+}
+
+.dependencies path.critical {
+    stroke: #a02323;
+}
+/* ]]> */</style>
+<g class="x axis-grid" transform="translate(0,285)" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle"><path class="domain" stroke="currentColor" d="M140.22,-300V0H1332.09V-300"></path><g class="tick" opacity="1" transform="translate(140.22,0)"><line stroke="currentColor" y2="-300"></line><text fill="currentColor" y="3" dy="0.71em">2022</text></g><g class="tick" opacity="1" transform="translate(345.5340263949988,0)"><line stroke="currentColor" y2="-300"></line><text fill="currentColor" y="3" dy="0.71em">February</text></g><g class="tick" opacity="1" transform="translate(530.9789534614495,0)"><line stroke="currentColor" y2="-300"></line><text fill="currentColor" y="3" dy="0.71em">March</text></g><g class="tick" opacity="1" transform="translate(736.0170201435517,0)"><line stroke="currentColor" y2="-300"></line><text fill="currentColor" y="3" dy="0.71em">April</text></g><g class="tick" opacity="1" transform="translate(934.7080134290344,0)"><line stroke="currentColor" y2="-300"></line><text fill="currentColor" y="3" dy="0.71em">May</text></g><g class="tick" opacity="1" transform="translate(1140.0220398240333,0)"><line stroke="currentColor" y2="-300"></line><text fill="currentColor" y="3" dy="0.71em">June</text></g></g><g class="group-block"><rect x="0" y="50" height="50" width="1402.2" class="even"></rect><rect x="0" y="100" height="150" width="1402.2" class="odd"></rect></g><g class="group-block-label"><text x="5" y="55"><tspan x="5" dy="15">Harry's Tasks</tspan></text><text x="5" y="105"><tspan x="5" dy="15">Karin's Tasks</tspan></text></g><g class="tasks"><rect class="done" x="140.22" y="55" width="393.05753554063443" height="40" rx="10" ry="10" onclick="none;"></rect><rect class="pending" data-progress="0" x="140.22" y="105" width="599.3017084973374" height="40" rx="10" ry="10" onclick="none;"></rect><rect class="in-progress" x="533.2775355406344" y="155" width="805.8234644593656" height="40" rx="10" ry="10" onclick="none;"></rect><rect class="critical" x="626.2678423246122" y="205" width="233.1697244732578" height="40" rx="10" ry="10" onclick="none;"></rect></g><g class="tasks-labels"><text class="done" x="336.7487677703172" y="65" onclick="none;"><tspan x="336.7487677703172" dy="15">My Task</tspan></text><text class="pending" x="439.8708542486687" y="115" onclick="none;"><tspan x="439.8708542486687" dy="15">Task With Progress</tspan></text><text class="in-progress" x="936.1892677703172" y="165" onclick="none;"><tspan x="936.1892677703172" dy="15">My Other Task #3342</tspan></text><text class="critical" x="742.852704561241" y="215" onclick="none;"><tspan x="742.852704561241" dy="15">Task With Dependency</tspan></text></g><g class="milestones"></g><g class="milestones-labels"></g><g class="dependencies"><path d="M435 95 L435 195 C435 225 435 225 485 225 L626 225" class="done path"></path><path d="M626 225 L616 230 L616 220 Z" class="done arrow-head"></path></g></svg>

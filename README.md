@@ -1,19 +1,4 @@
-```gantt
-Option Title My Example Gantt Chart!
-Option AxisTicks 6
-Option TodayMarker On
-Option Dependencies On
-
-group super group
-task task 1, t1, pending, 01-01-2022, 2M, , 80%
-task task 2, t2, done, after t1, 1M, t1
-task task 3, t3,, 2W after t1, 3W, t1 t2 t4
-milestone jalon\n1, m1,, after t3, t3
-
-group superGroup2
-milestone jalon 2, m2,, 02-15-2022, t1
-task task 4, t4, active, 1D after m2, 2W, m2 t2
-```
+![[main.svg]]
 
 # Usage
 
@@ -30,13 +15,7 @@ Task task 2, t2, done, after t1, 1M
 \```
 ```
 
-```gantt
-Option Title My Gantt Chart!
-
-Group This is a Group
-Task task 1, t1, done, 01-01-2022, 2M
-Task task 2, t2, , after t1, 1M
-```
+![[usage.svg]]
 ```ad-note
 The keywords are **not** case-sensitive.
 ```
@@ -96,17 +75,7 @@ Milestone important \nmilestone, m1, , after t3
 \```
 ```
 
-```gantt
-Option Title My Gantt Chart!
-
-Group This is a Group
-Task task 1, t1, , 01-01-2022, 2M
-Task task 2, t2, , after t1, 1M
-
-Group This is another \nGroup
-Task task 3, t3, , after t1, 2W
-Milestone important \nmilestone, m1, , after t3
-```
+![[group.svg]]
 
 ```ad-important
 If the title of a **group**, **task** or **milestone** appear too long, you can inster a line break using the symbol **\n** as used on the example above.
@@ -143,18 +112,7 @@ Task Task With Progress      ,  tp1,    pending , 01-01-2022, 3M,      ,0%
 \```
 ```
 
-```gantt
-option dependencies On
-
-Group Harry's Tasks
-Task My Task,            t1,           done, 01-01-2022, 2M
-
-Group Karin's Tasks
-Task My Other Task #3342,  t2, in-progress,        after t1, 06/30/2022
-Task Task With Dependency,  d3,         critical, 2W after t1, 5W, t1
-Task Task With Progress      ,  tp1,         pending, 01-01-2022, 3M,      ,0% 
-
-```
+![[task.svg]]
 ### Timing
 Start date and end date may be either absolute, relative or a duratin.
 

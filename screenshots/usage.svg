@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewbox="0,0,1402.2,200" width="1402.2" height="200">
+<style>/* <![CDATA[ */
+/* GRID */
+.grid line {
+    color: #ccc;
+}
+
+/* GROUP BLOCK */
+.group-block rect {
+    opacity: 25%;
+}
+
+.group-block rect.even {
+    fill: #999;
+}
+
+.group-block rect.odd {
+    fill: #777;
+}
+
+.group-block-label text {
+    fill: white;
+    font-size: 1em;
+}
+
+/* TASKS */
+.tasks-labels text {
+    fill: white;
+    text-anchor: middle;
+    font-size: 0.8em;
+}
+
+.tasks-labels tspan {
+    text-anchor: middle;
+}
+
+.tasks rect {
+    fill: rgb(30, 41, 41);
+}
+
+.tasks rect[onclick^=document],
+.tasks-labels text[onclick^=document] {
+    cursor: pointer;
+}
+
+/* MILESTONES */
+.milestones-labels text {
+    fill: white;
+    text-anchor: middle;
+    font-size: 0.7em;
+}
+
+.milestones rect {
+    fill: darkcyan;
+    stroke: #aaa;
+    stroke-width: 1px;
+}
+
+.milestones rect[onclick^=document],
+.milestones-labels text[onclick^=document] {
+    cursor: pointer;
+}
+
+/* TODAY MARKER */
+.today-marker line {
+    stroke: brown;
+    stroke-width: 2px;
+}
+
+/* DEPENDENCIES */
+.dependencies path {
+    stroke-width: 2px;
+    stroke: #c7254e;
+    fill: none;
+}
+
+.dependencies path.arrow-head {
+    stroke: none;
+    fill: #c7254e;
+}
+
+/* TITLE */
+text.title{
+    fill: #ddd;
+    text-anchor: middle;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* CUSTOM CLASSES */
+.tasks rect.in-progress, 
+.milestones rect.in-progress, 
+.dependencies path.arrow-head.in-progress {
+    fill: #ff9200;
+}
+
+.dependencies path.in-progress {
+    stroke: #ff9200;
+}
+
+.tasks rect.done, 
+.milestones rect.done,
+.dependencies path.arrow-head.done {
+    fill: #2da023;
+}
+
+.dependencies path.done {
+    stroke: #2da023;
+}
+
+.tasks rect.pending, 
+.milestones rect.pending,
+.dependencies path.arrow-head.pending {
+    fill: #2378a0;
+}
+
+.dependencies path.pending {
+    stroke: #2378a0;
+}
+
+.tasks rect.critical, 
+.milestones rect.critical,
+.dependencies path.arrow-head.critical {
+    fill: #a02323;
+}
+
+.dependencies path.critical {
+    stroke: #a02323;
+}
+/* ]]> */</style>
+<g class="x axis-grid" transform="translate(0,190)" fill="none" font-size="10" font-family="sans-serif" text-anchor="middle"><path class="domain" stroke="currentColor" d="M140.22,-200V0H1332.09V-200"></path><g class="tick" opacity="1" transform="translate(140.22,0)"><line stroke="currentColor" y2="-200"></line><text fill="currentColor" y="3" dy="0.71em">2022</text></g><g class="tick" opacity="1" transform="translate(550.9431496062991,0)"><line stroke="currentColor" y2="-200"></line><text fill="currentColor" y="3" dy="0.71em">February</text></g><g class="tick" opacity="1" transform="translate(921.9188976377951,0)"><line stroke="currentColor" y2="-200"></line><text fill="currentColor" y="3" dy="0.71em">March</text></g><g class="tick" opacity="1" transform="translate(1332.09,0)"><line stroke="currentColor" y2="-200"></line><text fill="currentColor" y="3" dy="0.71em">April</text></g></g><g class="group-block"><rect x="0" y="50" height="100" width="1402.2" class="even"></rect></g><g class="group-block-label"><text x="5" y="55"><tspan x="5" dy="15">This is a Group</tspan></text></g><g class="tasks"><rect class="done" x="140.22" y="55" width="786.2971264474293" height="40" rx="10" ry="10" onclick="none;"></rect><rect class="" x="926.5171264474293" y="105" width="412.5838735525707" height="40" rx="10" ry="10" onclick="none;"></rect></g><g class="tasks-labels"><text class="done" x="533.3685632237147" y="65" onclick="none;"><tspan x="533.3685632237147" dy="15">task 1</tspan></text><text class="" x="1132.8090632237147" y="115" onclick="none;"><tspan x="1132.8090632237147" dy="15">task 2</tspan></text></g><g class="milestones"></g><g class="milestones-labels"></g><text class="title" x="701.1" y="20">My Gantt Chart!</text></svg>
