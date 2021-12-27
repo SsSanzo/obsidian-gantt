@@ -120,7 +120,7 @@ export class Renderer{
         const axis_bottom = d3.axisBottom(bottom_scale).ticks(bottom_ticks);
 
         svg.append("g")
-            .attr('class', 'x axis-grid')
+            .attr('class', 'x grid')
             .attr('transform', 'translate(0,' + (this.height*0.95) + ')')
             .call(axis_bottom
                 .tickSize(-this.height)
