@@ -25,4 +25,16 @@ export class GanttInfo{
     groups: Array<Group> = [];
     tasks: Array<Task> = [];
     milestones: Array<Milestone> = [];
+    events: Array<Event> = [];
+}
+
+export enum EventType{
+    Popup = "popup",
+    GoTo = "goto"
+}
+
+export class Event{
+    TaskId: string;
+    Type: EventType;
+    URL: string;
 }

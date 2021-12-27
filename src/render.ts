@@ -1,4 +1,4 @@
-import {Group, GanttInfo} from "./ganttDb";
+import {Group, GanttInfo, EventType} from "./ganttDb";
 import * as Enumerable from "linq-es2015"; 
 import * as d3 from 'd3';
 
@@ -18,7 +18,7 @@ export class Renderer{
     heightPadding = 100;
     taskpadding = 5;
     widthScale = 0.95;
-    groupColumnSize = 0.2;
+    groupColumnSize = 0.1;
 
     constructor(info: GanttInfo){
         this.ganttInfo = info;
@@ -155,17 +155,23 @@ export class Renderer{
                     .attr("height", (g) => (g.get("count") as number)/(this.numberOfItems+2)*this.height)
                     .attr("width", this.width)
                     .attr("class", (g) => g.get("class") as string);
-        
-        svg.append("g")
-            .attr("class", "group-block-label")
-            .selectAll("text")
-            .data(groups)
+
+        const texts = svg.append("g")
+                .attr("class", "group-block-label")
+                .selectAll("text")
+                .data(groups)
+                .enter()
+                    .append("text")
+                    .attr("x", 5)
+                    .attr("y", (g) => 5+(g.get("start") as number + 1)/(this.numberOfItems+2)*this.height);
+
+        texts.selectAll("tspan")
+            .data((g) => (g.get("name") as string).split("\\n"))
             .enter()
-                .append("text")
+                .append("tspan")
                 .attr("x", 5)
-                .attr("y", (g) => 5+(g.get("start") as number + 1)/(this.numberOfItems+2)*this.height)
-                .attr("dy", "1.2em")
-                .text((g) => g.get("name") as string);
+                .attr("dy", 15)
+                .text(d => d);
     }
 
     RenderEvents(svg: d3.Selection<SVGSVGElement, undefined, null, undefined>):void{
@@ -194,19 +200,33 @@ export class Renderer{
                 .attr("width", (t) => (this.DateToPosition(t.get("end") as Date) - this.DateToPosition(t.get("start") as Date))*this.width*(1-this.groupColumnSize))
                 .attr("height", this.taskHeight - 2*this.taskpadding)
                 .attr("rx", 10)
-                .attr("ry", 10);
+                .attr("ry", 10)
+                .attr("onclick", (t) => this.BuildOnclickEvent(t.get("ID") as string));
         
-        svg.append("g")
-            .attr("class", "tasks-labels")
-            .selectAll("text")
-            .data(tasks)
-            .enter()
-                .append("text")
-                .attr("class", (t) => t.get("class") as string)
-                .text((t) => t.get("name") as string)
-                .attr("x", (t) => (this.DateToPosition(t.get("end") as Date) + this.DateToPosition(t.get("start") as Date))/2.0*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize)
-                .attr("y", (t) => (t.get("position") as number + 1 + 0.5)/(this.numberOfItems+2)*this.height + this.taskpadding);
+        const x = (t: Map<string, unknown>) => {
+            return (this.DateToPosition(t.get("end") as Date) + this.DateToPosition(t.get("start") as Date))/2.0*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize;
+        };
 
+        const offset = (n:number) => n - 0.5*(n-1);
+
+        const texts = svg.append("g")
+                .attr("class", "tasks-labels")
+                .selectAll("text")
+                .data(tasks)
+                .enter()
+                    .append("text")
+                    .attr("class", (t) => t.get("class") as string)
+                    .attr("x", (t) => x(t))
+                    .attr("y", (t) => (t.get("position") as number + 1 + 0.5)/(this.numberOfItems+2)*this.height + this.taskpadding - offset((t.get("name") as string).split("\\n").length)*15)
+                    .attr("onclick", (t) => this.BuildOnclickEvent(t.get("ID") as string));
+            
+        texts.selectAll("tspan")
+                .data((t) => (t.get("name") as string).split("\\n").map(d => [d, x(t)]))
+                .enter()
+                    .append("tspan")
+                    .attr("x", d=> d[1])
+                    .attr("dy", 15)
+                    .text(d => d[0]);
     }
 
     RenderMilestones(svg: d3.Selection<SVGSVGElement, undefined, null, undefined>, milestones: Array<Map<string, unknown>>):void{
@@ -222,19 +242,34 @@ export class Renderer{
                 .attr("y", (t) => (t.get("position") as number + 1)/(this.numberOfItems+2)*this.height + this.taskpadding)
                 .attr("width", this.taskHeight - 2*this.taskpadding)
                 .attr("height", this.taskHeight - 2*this.taskpadding)
-                .attr("transform", (t) => "translate(" + (-this.taskHeight/2) + ", 0) rotate(45, " + (this.DateToPosition(t.get("start") as Date)*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + this.taskHeight/2.0 - this.taskpadding) + ", " + ((t.get("position") as number + 1)/(this.numberOfItems+2)*this.height + this.taskpadding + this.taskHeight/2.0 - this.taskpadding) + ")");
-        
-        svg.append("g")
-            .attr("class", "milestones-labels")
-            .selectAll("text")
-            .data(milestones)
-            .enter()
-                .append("text")
-                .attr("class", (t) => t.get("class") as string)
-                .text((t) => t.get("name") as string)
-                .attr("x", (t) => this.DateToPosition(t.get("start") as Date)*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + this.taskHeight/2 - this.taskpadding)
-                .attr("y", (t) => (t.get("position") as number + 1 + 0.5)/(this.numberOfItems+2)*this.height + this.taskpadding)
-                .attr("transform", "translate(" + (-this.taskHeight/2) + ", 0)");
+                .attr("transform", (t) => "translate(" + (-this.taskHeight/2) + ", 0) rotate(45, " + (this.DateToPosition(t.get("start") as Date)*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + this.taskHeight/2.0 - this.taskpadding) + ", " + ((t.get("position") as number + 1)/(this.numberOfItems+2)*this.height + this.taskpadding + this.taskHeight/2.0 - this.taskpadding) + ")")
+                .attr("onclick", (t) => this.BuildOnclickEvent(t.get("ID") as string));
+
+        const x = (t: Map<string, unknown>) => {
+            return this.DateToPosition(t.get("start") as Date)*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + this.taskHeight/2 - this.taskpadding;
+        };
+
+        const offset = (n:number) => n - 0.5*(n-1);
+
+        const texts = svg.append("g")
+                .attr("class", "milestones-labels")
+                .selectAll("text")
+                .data(milestones)
+                .enter()
+                    .append("text")
+                    .attr("class", (t) => t.get("class") as string)
+                    .attr("x", (t) => x(t))
+                    .attr("y", (t) => (t.get("position") as number + 1 + 0.5)/(this.numberOfItems+2)*this.height + this.taskpadding - offset((t.get("name") as string).split("\\n").length)*15)
+                    .attr("transform", "translate(" + (-this.taskHeight/2) + ", 0)")
+                    .attr("onclick", (t) => this.BuildOnclickEvent(t.get("ID") as string));
+
+        texts.selectAll("tspan")
+                .data((t) => (t.get("name") as string).split("\\n").map(d => [d, x(t)]))
+                .enter()
+                    .append("tspan")
+                    .attr("x", d=> d[1])
+                    .attr("dy", 15)
+                    .text(d => d[0]);
     }
 
     RenderTodayMarker(svg: d3.Selection<SVGSVGElement, undefined, null, undefined>):void{
@@ -355,6 +390,8 @@ export class Renderer{
                 const afterTurnPoint = new Point(0, 0);
                 const endingPoint = new Point(0, 0);
 
+                const offset = (from.get("position") as number)*2/100;
+
                 if((from.get("position") as number) < (to.get("position") as number)){
                     startingPoint.y = (from.get("position") as number + 1)/(this.numberOfItems+2)*this.height + this.taskHeight - this.taskpadding;
                 }else{
@@ -362,9 +399,9 @@ export class Renderer{
                 }
                 
                 if(toDate>=fromEndDate){
-                    startingPoint.x = fromStartDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + (fromEndDate - fromStartDate)*this.width*(1-this.groupColumnSize)*0.75;
+                    startingPoint.x = fromStartDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + (fromEndDate - fromStartDate)*this.width*(1-this.groupColumnSize)*(0.75 + offset);
                 }else{
-                    startingPoint.x = fromStartDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + (toDate - fromStartDate)*this.width*(1-this.groupColumnSize)*0.75;
+                    startingPoint.x = fromStartDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize + (toDate - fromStartDate)*this.width*(1-this.groupColumnSize)*(0.75 + offset);
                 }
 
                 endingPoint.x =  toDate*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize;
@@ -392,18 +429,32 @@ export class Renderer{
                         "C" + controlBeforeTurnPoint + " " + controlAfterTurnPoint + " " + afterTurnPoint + " " +
                         "L" + endingPoint;
                 
-                paths.push([path, to.get("class") as string + " path"]);
+                paths.push([path, from.get("class") as string + " path"]);
 
                 const arrowHead =   "M" + endingPoint + " " +
                                     "L" + endingPoint.Add(-10,5) + " " +
                                     "L" + endingPoint.Add(-10,-5) + " " +
                                     "Z";
                 
-                paths.push([arrowHead, to.get("class") as string + " arrow-head"]);
+                paths.push([arrowHead, from.get("class") as string + " arrow-head"]);
             }
         });
 
         return paths;
+    }
+
+    BuildOnclickEvent(eventId: string):string{
+        const event = Enumerable.AsEnumerable(this.ganttInfo.events).FirstOrDefault((e) => e.TaskId==eventId);
+        if(event == null) return "none;"
+        if(event.TaskId == null || event.TaskId=="") return "none;"
+
+        const regexp = new RegExp("obsidian:\\/\\/open?\\b([-a-zA-Z0-9()!@:%_\\+.~#?&\\/\\/=]*)");
+        if(!regexp.test(event.URL)) throw new Error("Error generating event. The URL is incorrect '" + event.URL + "'");
+        if(event.Type == EventType.GoTo) return "document.location=\"" + event.URL + "\"";
+
+        if(event.Type == EventType.Popup) return "alert(\"Popup not supported yet.\")";
+
+        throw new Error("Event Type '" + event.Type + "' Not yet supported.");
     }
 }
 

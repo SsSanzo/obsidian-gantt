@@ -1,5 +1,5 @@
 import * as Enumerable from "linq-es2015"; 
-import {Task, Group, Milestone, GanttInfo} from "./ganttDb";
+import {Task, Group, Milestone, GanttInfo, Event, EventType} from "./ganttDb";
 
 export class Parser{
 
@@ -8,6 +8,7 @@ export class Parser{
     static KEYWORD_GROUP = "group ";
     static KEYWORD_TASK = "task ";
     static KEYWORD_MILESTONE = "milestone ";
+    static KEYWORD_ONCLICK = "click ";
     static KEYWORD_COMMENT = "%%";
     static KEYWORD_AFTER = " after ";
     static KEYWORD_DURATION_WEEK = "W";
@@ -31,17 +32,20 @@ export class Parser{
         lines.forEach(line => {
 
             if(line.toLocaleLowerCase().startsWith(Parser.KEYWORD_OPTION)){
-                this.ParseOption(line.substring(Parser.KEYWORD_OPTION.length));
+                this.ParseOption(line.substring(Parser.KEYWORD_OPTION.length).trim());
+
+            }else if(line.toLocaleLowerCase().startsWith(Parser.KEYWORD_ONCLICK)){
+                this.ParseClick(line.substring(Parser.KEYWORD_ONCLICK.length).trim());
 
             }else if(line.toLocaleLowerCase().startsWith(Parser.KEYWORD_GROUP)){
-                current_group = this.ParseGroup(line.substring(Parser.KEYWORD_GROUP.length));
+                current_group = this.ParseGroup(line.substring(Parser.KEYWORD_GROUP.length).trim());
 
             }else if(line.toLocaleLowerCase().startsWith(Parser.KEYWORD_TASK)){
-                this.ParseTask(line.substring(Parser.KEYWORD_TASK.length), current_group);
+                this.ParseTask(line.substring(Parser.KEYWORD_TASK.length).trim(), current_group);
 
             }
             else if(line.toLocaleLowerCase().startsWith(Parser.KEYWORD_MILESTONE)){
-                this.ParseMilestone(line.substring(Parser.KEYWORD_MILESTONE.length), current_group);
+                this.ParseMilestone(line.substring(Parser.KEYWORD_MILESTONE.length).trim(), current_group);
 
             }else if(line.startsWith(Parser.KEYWORD_COMMENT) || line.length<1){
                 null;
@@ -68,6 +72,30 @@ export class Parser{
         const key = elements[0].toLocaleLowerCase();
         const value = elements.slice(1).join(" ");
         this.ganttInfo.renderOptions.options.set(key, value);
+    }
+
+    ParseClick(line:string):void{
+        //taskId, type[goto| popup], url
+        const elements = Enumerable.AsEnumerable(line.split(",")).Where((e:string) => e.length>0).ToArray();
+        if(elements.length!=3) return;
+        const event = new Event();
+        event.TaskId = elements[0].trim();
+        event.URL = elements[2].trim();
+        if(!this.IDExists(event.TaskId)) throw new Error("Error on line '" + line + "'. Cannot find task or milestone '" + event.TaskId + "'");
+        
+        switch (elements[1].trim().toLowerCase()) {
+            case EventType.GoTo:
+                event.Type = EventType.GoTo
+                break;
+            
+            case EventType.Popup:
+                event.Type = EventType.Popup
+                break;
+
+            default:
+                throw new Error("Error on line '" + line + "'. Event Type '" + elements[1].trim().toLowerCase() + "' not recognized. Please use another event type (" + [EventType.Popup, EventType.GoTo].join(", ") + ")");
+        }
+        this.ganttInfo.events.push(event);
     }
 
     ParseGroup(line:string):Group{
