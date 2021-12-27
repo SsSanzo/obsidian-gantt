@@ -4,65 +4,50 @@
 
 The gantt plugin generates a SVG image of a gantt chart complete with tasks, milestones, and dependencies for usage in any project. The gantt is generate by parsing the text in a code markup with the **gantt** language. Each line represent a separate *option*, *group*, *task*, *milestone*, or *event*.
 
-
-```ad-example
-\```gantt
+````markdown
+```gantt
 Option Title My Gantt Chart!
 
 Group This is a Group
 Task task 1, t1, , 01-01-2022, 2M
 Task task 2, t2, done, after t1, 1M
-\```
 ```
+````
 
 ![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/usage.svg)
-```ad-note
-The keywords are **not** case-sensitive.
-```
+> ℹ️ The keywords are **not** case-sensitive.
+
 ## Options
 All options need to start with an **option** keyword. 
 
 ### Title
 Displays the specified title at the top of the chart
 **Default value**: empty
-```ad-note
-title: Format
-**option** **title** Text with spaces
-```
+> 💻 Format: **option** **title** Text with spaces
 
 ### Today Marker
 Display a vertical line on the time axis representing today.
 **Default value**: Off
-```ad-note
-title: Format
-**option** **todaymarker** On
-```
+> 💻 Format: **option** **todaymarker** On
 
 ### Axis Ticks
 Changes 
 **Default value**: 6
-```ad-note
-title: Format
-**option** **axisticks** number
-```
+> 💻 Format: **option** **axisticks** number
+
 ### Dependencies
 Displays the dependencies
 **Default value**: Off
-```ad-note
-title: Format
-**option** **dependencies** On
-```
+> 💻 Format: **option** **dependencies** On
+
 ## Groups
 This is optional.
 You can organize your tasks by group. All tasks and milestones defined after this group will be part of it until another group is defined.
+> 💻 Format: **group** text as title of the group
 
-```ad-note
-title: Format
-**group** text as title of the group
-```
 ##### Example
-```ad-example
-\```gantt
+````markdown
+```gantt
 Option Title My Gantt Chart!
 
 Group This is a Group
@@ -72,14 +57,12 @@ Task task 2, t2, , after t1, 1M
 Group This is another \nGroup
 Task task 3, t3, , after t1, 2W
 Milestone important \nmilestone, m1, , after t3
-\```
 ```
+````
 
 ![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/group.svg)
 
-```ad-important
-If the title of a **group**, **task** or **milestone** appear too long, you can inster a line break using the symbol **\n** as used on the example above.
-```
+> ❗ Important: If the title of a **group**, **task** or **milestone** appear too long, you can inster a line break using the symbol **\n** as used on the example above.
 ## Tasks
 
 ### Definition
@@ -92,13 +75,11 @@ The class can be a user-defined CSS class. By default, 4 class are defined, repr
 - done
 - critical
 
-```ad-note
-title: Format
-**Task** title, identified, class, start date, end date, dependencies (optional), progress (optional)
-```
+> 💻 Format: **Task** title, identified, class, start date, end date, dependencies (optional), progress (optional)
+
 ##### Example
-```ad-example
-\```gantt
+````markdown
+```gantt
 option dependencies On
 
 Group Harry's Tasks
@@ -109,8 +90,8 @@ Task My Other Task #3342,                t2, in-progress,        after t1, 06-30
 Task Task With Dependency,  d3,         critical, 2W after t1, 5W, t1
 Task Task With Progress      ,  tp1,    pending , 01-01-2022, 3M,      ,0% 
 
-\```
 ```
+````
 
 ![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/task.svg)
 
@@ -129,18 +110,15 @@ The system automatically recognizes the date format automatically. These formats
 
 #### Relative Date
 A relative date is calculated on the fly using a delay after the end date of a **previously defined task or milestone**. The delay is optional. If the delay is not specified, the system assumes a delay of *0D*. The delay format follows the same rules as the duration below.
-```ad-note
-title: Format
-Duration **after** taskIdentified
-or
-**after** taskIdentified
-```
+> 💻 Format: Duration **after** taskIdentified
+> or
+> 💻 Format: **after** taskIdentified
 
-```ad-example
-2W after t1
-or
-after t2
-```
+
+> ➡️ Example: 2W after t1
+> or
+> ➡️ Example: after t2
+
 #### Duration
 
 A duration is a number followed by the symbol of unit with no space. The units are defined as follows:
@@ -158,45 +136,31 @@ A duration is a number followed by the symbol of unit with no space. The units a
 ### Dependencies
 Define to wich task or milestone this depends on. The tasks or milestones are identified by their identifier. If multiple are specified, they must be separated by a space.
 The dependency inherit the class (i.e. color and style) from the originating task or milestone.
-```ad-example
-Task Analyze Spreadsheet, AS18, , 2W after AS11, 5W, **AS05 milestone4**
-```
-```ad-note
-Don't forget to enable Dependencies to display them. Otherwise they will not appear.
-```
-```ad-warning
-If the task depends on another task defined in the future, the link will not be displayed
-```
+> ➡️ Example: Task Analyze Spreadsheet, AS18, , 2W after AS11, 5W, **AS05 milestone4**
+
+> ℹ️ Note: Don't forget to enable Dependencies to display them. Otherwise they will not appear.
+
+> ⚠️ Warning: If the task depends on another task defined in the future, the link will not be displayed
+
 ### Progress
 The progress is simply a percentage number. As of now, the progress is purely informative. It is planned to make it visual.
 
 
 ## Milestones
 A Milestone is similar to a task but do not have an end date. The milestone follows the same concepts as the task.
-```ad-note
-title: Format
-**Milestone** title, identifier, class, start date, dependencies (optional), progress (optional)
-```
+> 💻 Format: **Milestone** title, identifier, class, start date, dependencies (optional), progress (optional)
 
 ## Events
 Events allow interactions with the tasks. As of now, only 1 interaction is available: Go To. Events can be added to either tasks or milestones. An event is defined by the  identifier of the triggering task or milestone, the type of the event and some argument depending on the type of the event.
 
-```ad-note
-title: Format
-**click** taskId, EventType, arg
+> 💻 Format: **click** taskId, EventType, arg
 
-```
 ### Go To
 Navigate to another page within obsidian. The URL is obtained with a **right click on the note** from the obsidian file explorer, and use the command **Copy obsidian URL**.
-```ad-note
-title: Format
-**click** taskIdentified, **goto**, URL
+> 💻 Format: **click** taskIdentified, **goto**, URL
 
-```
 ### Popup
-```ad-warning
-Not yet supported
-```
+> ⚠️ Warning: Not yet supported
 
 
 ## Styling
