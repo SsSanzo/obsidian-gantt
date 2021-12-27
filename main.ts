@@ -13,21 +13,14 @@ export default class MyPlugin extends Plugin {
 		this.registerMarkdownCodeBlockProcessor("gantt", (source, element, context) => {
 			const parser = new Parser();
 
-			//try{
-				parser.Parse(source);
-			
-				const renderer = new Renderer(parser.ganttInfo);
-				//renderer.width = element.parentElement.clientWidth;
-				//renderer.height = element.parentElement.clientHeight;
-				renderer.width = element.ownerDocument.getElementsByClassName("view-content")[0].clientWidth*0.95;
+			parser.Parse(source);
+		
+			const renderer = new Renderer(parser.ganttInfo);
+			renderer.width = element.ownerDocument.getElementsByClassName("view-content")[0].clientWidth*0.95;
 
-				const graph = renderer.Render();
+			const graph = renderer.Render();
 
-				element.appendChild(graph);
-			//}catch(error){
-			//	element.innerHTML = error;
-			//}
-			
+			element.appendChild(graph);
 		});
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
