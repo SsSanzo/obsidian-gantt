@@ -209,3 +209,4 @@ All classes are under the master class **block-language-gantt**
 | ```text.title```                    | The chart title                                                                                     |
 # Limitations
 - The Go To Event only allows navigation to other obsidian pages. External URLs are not allowed for security reasons.
+- Style only works properly in dark mode.
