@@ -1,68 +1,288 @@
-## Obsidian Sample Plugin
+```gantt
+Option Title My Example Gantt Chart!
+Option AxisTicks 6
+Option TodayMarker On
+Option Dependencies On
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+group super group
+task task 1, t1, pending, 01-01-2022, 2M, , 80%
+task task 2, t2, done, after t1, 1M, t1
+task task 3, t3,, 2W after t1, 3W, t1 t2 t4
+milestone jalon\n1, m1,, after t3, t3
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+group superGroup2
+milestone jalon 2, m2,, 02-15-2022, t1
+task task 4, t4, active, 1D after m2, 2W, m2 t2
+```
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+# Usage
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Changes the default font color to red using `styles.css`.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
-
-### First time developing plugins?
-
-Quick starting guide for new plugin devs:
-
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
-
-### Releasing new releases
-
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
-
-### Adding your plugin to the community plugin list
-
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
-
-### How to use
-
-- Clone this repo.
-- `npm i` or `yarn` to install dependencies
-- `npm run dev` to start compilation in watch mode.
-
-### Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-### Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
+The gantt plugin generates a SVG image of a gantt chart complete with tasks, milestones, and dependencies for usage in any project. The gantt is generate by parsing the text in a code markup with the **gantt** language. Each line represent a separate *option*, *group*, *task*, *milestone*, or *event*.
 
 
-### API Documentation
+```ad-example
+\```gantt
+Option Title My Gantt Chart!
 
-See https://github.com/obsidianmd/obsidian-api
+Group This is a Group
+Task task 1, t1, , 01-01-2022, 2M
+Task task 2, t2, done, after t1, 1M
+\```
+```
+
+```gantt
+Option Title My Gantt Chart!
+
+Group This is a Group
+Task task 1, t1, done, 01-01-2022, 2M
+Task task 2, t2, , after t1, 1M
+```
+```ad-note
+The keywords are **not** case-sensitive.
+```
+## Options
+All options need to start with an **option** keyword. 
+
+### Title
+Displays the specified title at the top of the chart
+**Default value**: empty
+```ad-note
+title: Format
+**option** **title** Text with spaces
+```
+
+### Today Marker
+Display a vertical line on the time axis representing today.
+**Default value**: Off
+```ad-note
+title: Format
+**option** **todaymarker** On
+```
+
+### Axis Ticks
+Changes 
+**Default value**: 6
+```ad-note
+title: Format
+**option** **axisticks** number
+```
+### Dependencies
+Displays the dependencies
+**Default value**: Off
+```ad-note
+title: Format
+**option** **dependencies** On
+```
+## Groups
+This is optional.
+You can organize your tasks by group. All tasks and milestones defined after this group will be part of it until another group is defined.
+
+```ad-note
+title: Format
+**group** text as title of the group
+```
+##### Example
+```ad-example
+\```gantt
+Option Title My Gantt Chart!
+
+Group This is a Group
+Task task 1, t1, , 01-01-2022, 2M
+Task task 2, t2, , after t1, 1M
+
+Group This is another \nGroup
+Task task 3, t3, , after t1, 2W
+Milestone important \nmilestone, m1, , after t3
+\```
+```
+
+```gantt
+Option Title My Gantt Chart!
+
+Group This is a Group
+Task task 1, t1, , 01-01-2022, 2M
+Task task 2, t2, , after t1, 1M
+
+Group This is another \nGroup
+Task task 3, t3, , after t1, 2W
+Milestone important \nmilestone, m1, , after t3
+```
+
+```ad-important
+If the title of a **group**, **task** or **milestone** appear too long, you can inster a line break using the symbol **\n** as used on the example above.
+```
+## Tasks
+
+### Definition
+A task something to do or complete within a specified timeframe. As such a task has a Start Date, an End Date, a Title, and a Completion status. In addition, a task may have dependencies, and a progress. 
+When defining a task, each parameter must be separated by a comma following the format below.
+
+The class can be a user-defined CSS class. By default, 4 class are defined, representing different task completion status: 
+- pending
+- in-progress
+- done
+- critical
+
+```ad-note
+title: Format
+**Task** title, identified, class, start date, end date, dependencies (optional), progress (optional)
+```
+##### Example
+```ad-example
+\```gantt
+option dependencies On
+
+Group Harry's Tasks
+Task My Task,                          t1,           done, 01-01-2022, 2M
+
+Group Karine's Tasks
+Task My Other Task #3342,                t2, in-progress,        after t1, 06-30-2022
+Task Task With Dependency,  d3,         critical, 2W after t1, 5W, t1
+Task Task With Progress      ,  tp1,    pending , 01-01-2022, 3M,      ,0% 
+
+\```
+```
+
+```gantt
+option dependencies On
+
+Group Harry's Tasks
+Task My Task,            t1,           done, 01-01-2022, 2M
+
+Group Karin's Tasks
+Task My Other Task #3342,  t2, in-progress,        after t1, 06/30/2022
+Task Task With Dependency,  d3,         critical, 2W after t1, 5W, t1
+Task Task With Progress      ,  tp1,         pending, 01-01-2022, 3M,      ,0% 
+
+```
+### Timing
+Start date and end date may be either absolute, relative or a duratin.
+
+|               | Start Date | End Date |
+| ------------- | ---------- | -------- |
+| Absolute Date | Yes        | Yes      |
+| Relative Date | Yes        | No       |
+| Duration      | No         | Yes      |
+
+
+#### Absolute Date
+The system automatically recognizes the date format automatically. These formats are [IETF-compliant RFC 2822 timestamps](https://datatracker.ietf.org/doc/html/rfc2822#page-14), and also strings in a [version of ISO8601](https://www.ecma-international.org/ecma-262/11.0/#sec-date.parse).
+
+#### Relative Date
+A relative date is calculated on the fly using a delay after the end date of a **previously defined task or milestone**. The delay is optional. If the delay is not specified, the system assumes a delay of *0D*. The delay format follows the same rules as the duration below.
+```ad-note
+title: Format
+Duration **after** taskIdentified
+or
+**after** taskIdentified
+```
+
+```ad-example
+2W after t1
+or
+after t2
+```
+#### Duration
+
+A duration is a number followed by the symbol of unit with no space. The units are defined as follows:
+
+| Symbol | Unit   |
+| ------ | ------ |
+| Y      | Year   |
+| M      | Month  |
+| W      | Week   |
+| D      | Day    | 
+| H      | Hour   |
+| m      | minute |
+| S      | Second |
+
+### Dependencies
+Define to wich task or milestone this depends on. The tasks or milestones are identified by their identifier. If multiple are specified, they must be separated by a space.
+The dependency inherit the class (i.e. color and style) from the originating task or milestone.
+```ad-example
+Task Analyze Spreadsheet, AS18, , 2W after AS11, 5W, **AS05 milestone4**
+```
+```ad-note
+Don't forget to enable Dependencies to display them. Otherwise they will not appear.
+```
+```ad-warning
+If the task depends on another task defined in the future, the link will not be displayed
+```
+### Progress
+The progress is simply a percentage number. As of now, the progress is purely informative. It is planned to make it visual.
+
+
+## Milestones
+A Milestone is similar to a task but do not have an end date. The milestone follows the same concepts as the task.
+```ad-note
+title: Format
+**Milestone** title, identifier, class, start date, dependencies (optional), progress (optional)
+```
+
+## Events
+Events allow interactions with the tasks. As of now, only 1 interaction is available: Go To. Events can be added to either tasks or milestones. An event is defined by the  identifier of the triggering task or milestone, the type of the event and some argument depending on the type of the event.
+
+```ad-note
+title: Format
+**click** taskId, EventType, arg
+
+```
+### Go To
+Navigate to another page within obsidian. The URL is obtained with a **right click on the note** from the obsidian file explorer, and use the command **Copy obsidian URL**.
+```ad-note
+title: Format
+**click** taskIdentified, **goto**, URL
+
+```
+### Popup
+```ad-warning
+Not yet supported
+```
+
+
+## Styling
+
+### Predefined classes
+| Class       | Color    |
+| ----------- | -------- |
+| pending     | <span style='font-weight:bold;color:#2378a0'>\#2378a0</span> |
+| in-progress | <span style='font-weight:bold;color:#ff9200'>\#ff9200</span> |
+| done        | <span style='font-weight:bold;color:#2da023'>\#2da023</span> |
+| critical    |<span style='font-weight:bold;color:#a02323'> \#a02323</span> |
+
+### Custom classes
+To create a custom class, simply create a CSS snippet, create a class, and use-it directly in the gantt markdown.
+
+```css
+.block-language-gantt .tasks rect.in-progress,
+.block-language-gantt .milestones rect.in-progress,
+.block-language-gantt .dependencies path.arrow-head.in-progress {
+	fill: #ff9200;
+}
+
+.block-language-gantt .dependencies path.in-progress {
+	stroke: #ff9200;
+}
+```
+
+### Custom Style
+To customize the gantt, simply create a CSS snippet with your custom rules. You can use the following classes:
+All classes are under the master class **block-language-gantt**
+
+| Class                               | Description                                                                                         |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------- |
+| ```grid```                          | The background grid for scale                                                                       |
+| ```.group-block```                  | A group of task or milestones                                                                       |
+| ```.group-block rect.even```        | The even number of groups                                                                           |
+| ```.group-block rect.odd```         | The odd number of groups                                                                            |
+| ```.group-block-label text```       | The label of a group                                                                                |
+| ```.tasks rect```                   | A task                                                                                              |
+| ```.tasks-labels text```            | A task label (carries the same custom class as the task)                                            |
+| ```.milestones rect```              | A milestone                                                                                         |
+| ```.milestones-labels text```       | A milestone label (carries the same custom class as the task)                                       |
+| ```.today-marker line```            | Today's marker                                                                                      |
+| ```.dependencies path```            | The path of a dependency (carries the same custom class as the originating class or milestone)      |
+| ```.dependencies path.arrow-head``` | The arrowhead of a dependency (carries the same custom class as the originating class or milestone) |
+| ```text.title```                    | The chart title                                                                                     |
+# Limitations
+- The Go To Event only allows navigation to other obsidian pages. External URLs are not allowed for security reasons.

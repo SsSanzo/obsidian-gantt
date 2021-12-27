@@ -1,7 +1,10 @@
+
+/* GRID */
 .block-language-gantt .grid line {
     color: #ccc;
 }
 
+/* GROUP BLOCK */
 .block-language-gantt .group-block rect {
     opacity: 25%;
 }
@@ -19,14 +22,11 @@
     font-size: 1em;
 }
 
+/* TASKS */
 .block-language-gantt .tasks-labels text {
     fill: white;
     text-anchor: middle;
     font-size: 0.8em;
-}
-
-.block-language-gantt .tasks-labels text[onclick^=document] {
-    cursor: pointer;
 }
 
 .block-language-gantt .tasks-labels tspan {
@@ -37,34 +37,16 @@
     fill: rgb(30, 41, 41);
 }
 
-.block-language-gantt .tasks rect[onclick^=document] {
+.block-language-gantt .tasks rect[onclick^=document],
+.block-language-gantt .tasks-labels text[onclick^=document] {
     cursor: pointer;
 }
 
-.block-language-gantt .tasks rect.in-progress {
-    fill: #ff9200;
-}
-
-.block-language-gantt .tasks rect.done {
-    fill: #2da023;
-}
-
-.block-language-gantt .tasks rect.pending {
-    fill: #2378a0;
-}
-
-.block-language-gantt .tasks rect.critical {
-    fill: #a02323;
-}
-
+/* MILESTONES */
 .block-language-gantt .milestones-labels text {
     fill: white;
     text-anchor: middle;
     font-size: 0.7em;
-}
-
-.block-language-gantt .milestones-labels text[onclick^=document] {
-    cursor: pointer;
 }
 
 .block-language-gantt .milestones rect {
@@ -73,35 +55,22 @@
     stroke-width: 1px;
 }
 
-.block-language-gantt .milestones rect[onclick^=document] {
+.block-language-gantt .milestones rect[onclick^=document],
+.block-language-gantt .milestones-labels text[onclick^=document] {
     cursor: pointer;
 }
 
+/* TODAY MARKER */
 .block-language-gantt .today-marker line {
     stroke: brown;
     stroke-width: 2px;
 }
 
+/* DEPENDENCIES */
 .block-language-gantt .dependencies path {
     stroke-width: 2px;
     stroke: #c7254e;
     fill: none;
-}
-
-.block-language-gantt .dependencies path.in-progress {
-    stroke: #ff9200;
-}
-
-.block-language-gantt .dependencies path.done {
-    stroke: #2da023;
-}
-
-.block-language-gantt .dependencies path.critical {
-    stroke: #a02323;
-}
-
-.block-language-gantt .dependencies path.pending {
-    stroke: #2378a0;
 }
 
 .block-language-gantt .dependencies path.arrow-head {
@@ -109,25 +78,51 @@
     fill: #c7254e;
 }
 
-.block-language-gantt .dependencies path.arrow-head.in-progress {
-    fill: #ff9200;
-}
-
-.block-language-gantt .dependencies path.arrow-head.done {
-    fill: #2da023;
-}
-
-.block-language-gantt .dependencies path.arrow-head.critical {
-    fill: #a02323;
-}
-
-.block-language-gantt .dependencies path.arrow-head.pending {
-    fill: #2378a0;
-}
-
+/* TITLE */
 .block-language-gantt text.title{
     fill: #ddd;
     text-anchor: middle;
     font-size: 1.5em;
     font-weight: bold;
+}
+
+/* CUSTOM CLASSES */
+.block-language-gantt .tasks rect.in-progress, 
+.block-language-gantt .milestones rect.in-progress, 
+.block-language-gantt .dependencies path.arrow-head.in-progress {
+    fill: #ff9200;
+}
+
+.block-language-gantt .dependencies path.in-progress {
+    stroke: #ff9200;
+}
+
+.block-language-gantt .tasks rect.done, 
+.block-language-gantt .milestones rect.done,
+.block-language-gantt .dependencies path.arrow-head.done {
+    fill: #2da023;
+}
+
+.block-language-gantt .dependencies path.done {
+    stroke: #2da023;
+}
+
+.block-language-gantt .tasks rect.pending, 
+.block-language-gantt .milestones rect.pending,
+.block-language-gantt .dependencies path.arrow-head.pending {
+    fill: #2378a0;
+}
+
+.block-language-gantt .dependencies path.pending {
+    stroke: #2378a0;
+}
+
+.block-language-gantt .tasks rect.critical, 
+.block-language-gantt .milestones rect.critical,
+.block-language-gantt .dependencies path.arrow-head.critical {
+    fill: #a02323;
+}
+
+.block-language-gantt .dependencies path.critical {
+    stroke: #a02323;
 }
