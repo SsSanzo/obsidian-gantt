@@ -1,4 +1,4 @@
-![[main.svg]]
+![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/main.svg)
 
 # Usage
 
@@ -15,7 +15,7 @@ Task task 2, t2, done, after t1, 1M
 \```
 ```
 
-![[usage.svg]]
+![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/usage.svg)
 ```ad-note
 The keywords are **not** case-sensitive.
 ```
@@ -75,7 +75,7 @@ Milestone important \nmilestone, m1, , after t3
 \```
 ```
 
-![[group.svg]]
+![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/group.svg)
 
 ```ad-important
 If the title of a **group**, **task** or **milestone** appear too long, you can inster a line break using the symbol **\n** as used on the example above.
@@ -112,7 +112,8 @@ Task Task With Progress      ,  tp1,    pending , 01-01-2022, 3M,      ,0%
 \```
 ```
 
-![[task.svg]]
+![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/task.svg)
+
 ### Timing
 Start date and end date may be either absolute, relative or a duratin.
 
