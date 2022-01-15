@@ -1,6 +1,10 @@
 
 /* GRID */
-.block-language-gantt .grid {
+.theme-light .block-language-gantt .grid {
+    color: #444;
+}
+
+.theme-dark .block-language-gantt .grid {
     color: #ccc;
 }
 
@@ -20,6 +24,10 @@
 .block-language-gantt .group-block-label text {
     fill: white;
     font-size: 1em;
+}
+
+.theme-light .block-language-gantt .group-block-label text {
+    fill: black;
 }
 
 /* TASKS */
@@ -84,6 +92,10 @@
     text-anchor: middle;
     font-size: 1.5em;
     font-weight: bold;
+}
+
+.theme-light .block-language-gantt text.title{
+    fill: #333;
 }
 
 /* CUSTOM CLASSES */
