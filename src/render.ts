@@ -7,6 +7,7 @@ export class Renderer{
     static KEYWORD_TITLE = "title";
     static KEYWORD_TODAYMARKER = "todaymarker";
     static KEYWORD_DEPENDENCIES = "dependencies";
+    static KEYWORD_DATEFORMAT = "dateformat";
 
     ganttInfo: GanttInfo;
     startDate: Date;
@@ -118,6 +119,11 @@ export class Renderer{
         }
         const bottom_scale = d3.scaleTime().domain([this.startDate, this.endDate]).range([this.width*this.groupColumnSize, this.width * this.widthScale]);
         const axis_bottom = d3.axisBottom(bottom_scale).ticks(bottom_ticks);
+
+        if(this.ganttInfo.renderOptions.options.has(Renderer.KEYWORD_DATEFORMAT)){
+            axis_bottom.tickFormat((d) => 
+                d.toLocaleString(this.ganttInfo.renderOptions.options.get(Renderer.KEYWORD_DATEFORMAT) as string, {dateStyle: "short"}));
+        }
 
         svg.append("g")
             .attr('class', 'x grid')
