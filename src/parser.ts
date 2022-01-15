@@ -1,5 +1,6 @@
 import * as Enumerable from "linq-es2015"; 
 import {Task, Group, Milestone, GanttInfo, Event, EventType} from "./ganttDb";
+import { Renderer } from "./render";
 
 export class Parser{
 
@@ -21,6 +22,7 @@ export class Parser{
 
     constructor(){
         this.ganttInfo = new GanttInfo();
+        this.ParseOption(Renderer.KEYWORD_BUSINESSDAYS + " Off");
     }
 
     Parse(text:string):GanttInfo{
@@ -190,7 +192,13 @@ export class Parser{
         const date: Date = new Date(from.valueOf());
         switch (keyword) {
             case Parser.KEYWORD_DURATION_DAY:
-                date.setDate(date.getDate() + amount);
+                date.setDate(
+                    this.AddDays(
+                        date, 
+                        amount, 
+                        (this.ganttInfo.renderOptions.options.get(Renderer.KEYWORD_BUSINESSDAYS) as string).toLocaleLowerCase() == "on"
+                    )
+                );
                 break;
             
             case Parser.KEYWORD_DURATION_HOUR:
@@ -237,5 +245,25 @@ export class Parser{
     IDExists(ID:string): boolean{
         return Enumerable.AsEnumerable(this.ganttInfo.milestones).Any((milestone) => milestone.ID==ID) ||
                 Enumerable.AsEnumerable(this.ganttInfo.tasks).Any((task) => task.ID==ID);
+    }
+
+    AddDays(date: Date, amount: number, businessDays: boolean): number{
+        if(!businessDays) return date.getDate() + amount;
+
+        let current_day: number = date.getDay()-1;
+        if(current_day==-1){
+            current_day = 6;
+        }
+
+        const days: number = amount % 5;
+        const weeks: number = Math.floor(amount/5);
+
+        let paddingDate = 0;
+        if(current_day+days>=5){
+            paddingDate = 2;
+        }
+
+        return date.getDate()+days+paddingDate+7*weeks;
+
     }
 }

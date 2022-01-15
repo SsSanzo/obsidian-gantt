@@ -8,6 +8,7 @@ export class Renderer{
     static KEYWORD_TODAYMARKER = "todaymarker";
     static KEYWORD_DEPENDENCIES = "dependencies";
     static KEYWORD_DATEFORMAT = "dateformat";
+    static KEYWORD_BUSINESSDAYS = "businessdays";
 
     ganttInfo: GanttInfo;
     startDate: Date;
