@@ -25,8 +25,8 @@ export class Parser{
         this.ganttInfo = new GanttInfo();
         //default options
         this.ParseOption(Renderer.KEYWORD_BUSINESSDAYS + " Off");
-        this.ParseOption(Renderer.KEYWORD_INPUTDATEFORMAT + " MM/DD/YYYY");
-        this.ParseOption(Renderer.KEYWORD_OUTPUTDATEFORMAT + " MM/DD/YYYY");
+        this.ParseOption(Renderer.KEYWORD_INPUTDATEFORMAT + " MM/dd/yyyy");
+        this.ParseOption(Renderer.KEYWORD_OUTPUTDATEFORMAT + " MM/dd/yyyy");
     }
 
     Parse(text:string):GanttInfo{
