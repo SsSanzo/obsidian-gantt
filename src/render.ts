@@ -455,8 +455,9 @@ export class Renderer{
         if(event == null) return "none;"
         if(event.TaskId == null || event.TaskId=="") return "none;"
 
-        const regexp = new RegExp("obsidian:\\/\\/open?\\b([-a-zA-Z0-9()!@:%_\\+.~#?&\\/\\/=]*)");
-        if(!regexp.test(event.URL)) throw new Error("Error generating event. The URL is incorrect '" + event.URL + "'");
+        const urlRegEx = new RegExp("(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)");
+        const obsidianRegexp = new RegExp("obsidian:\\/\\/open?\\b([-a-zA-Z0-9()!@:%_\\+.~#?&\\/\\/=]*)");
+        if(!urlRegEx.test(event.URL) || !obsidianRegexp.test(event.URL)) throw new Error("Error generating event. The URL is incorrect '" + event.URL + "'");
         if(event.Type == EventType.GoTo) return "document.location=\"" + event.URL + "\"";
 
         if(event.Type == EventType.Popup) return "alert(\"Popup not supported yet.\")";
