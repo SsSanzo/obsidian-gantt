@@ -99,6 +99,21 @@ export class Renderer{
         return svg.node();
     }
 
+    RenderGradientRule(svg: d3.Selection<SVGSVGElement, undefined, null, undefined>, eventId: string, eventClass: string, progress: number): void{
+        const gradient = svg.append("defs")
+            .append("linearGradient")
+                .attr("id", "gradient-" + eventId);
+
+        gradient.append("stop")
+            .attr("class", "grad-start-" + eventClass)
+            .attr("offset", Math.floor(progress*100) + "%");
+        
+        gradient.append("stop")
+            .attr("class", "grad-end-" + eventClass)
+            .attr("offset", Math.floor(progress*100) + "%");
+            
+    }
+
     RenderTitle(svg: d3.Selection<SVGSVGElement, undefined, null, undefined>): void{
         if(!this.ganttInfo.renderOptions.options.has(Renderer.KEYWORD_TITLE)) return;
         const title = this.ganttInfo.renderOptions.options.get(Renderer.KEYWORD_TITLE) as string;
@@ -207,6 +222,12 @@ export class Renderer{
             return (this.DateToPosition(t.get("end") as Date) - this.DateToPosition(t.get("start") as Date))*this.width*(1-this.groupColumnSize);
         };
 
+        tasks.forEach((t) => {
+            if(t.get("progress") != undefined){
+                this.RenderGradientRule(svg, t.get("ID") as string, t.get("class") as string, t.get("progress") as number)
+            }
+        });
+
         svg.append("g")
             .attr("class", "tasks")
             .selectAll("rect")
@@ -214,7 +235,10 @@ export class Renderer{
             .enter()
                 .append("rect")
                 .attr("class", (t) => t.get("class") as string)
-                .attr("data-progress", (t) => t.get("progress") as string)
+                .attr("style", (t) => {
+                    if(t.get("progress") != undefined) return "fill: url(#gradient-" + t.get("ID") as string + ")"
+                    else return "";
+                })
                 .attr("x", (t) => this.DateToPosition(t.get("start") as Date)*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize)
                 .attr("y", (t) => (t.get("position") as number + 1)/(this.numberOfItems+2)*this.height + this.taskpadding)
                 .attr("width", (t) => (width(t)))
@@ -490,7 +514,7 @@ export class Renderer{
         for (let i = 0; i < lines; i++) {
             const namePart = name.substring(i*maxTextWidth, (i+1)*maxTextWidth);
             const index = namePart.lastIndexOf(" ");
-            
+
             if(i+1==lines){
                 nameParts.push(namePart);
             }else if(index==-1){

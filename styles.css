@@ -105,6 +105,14 @@
     fill: #ff9200;
 }
 
+.grad-start-in-progress {
+    stop-color:#ff9200;
+}
+
+.grad-end-in-progress {
+    stop-color:#ffd59e;
+}
+
 .block-language-gantt .dependencies path.in-progress {
     stroke: #ff9200;
 }
@@ -113,6 +121,14 @@
 .block-language-gantt .milestones rect.done,
 .block-language-gantt .dependencies path.arrow-head.done {
     fill: #2da023;
+}
+
+.grad-start-done {
+    stop-color:#2da023;
+}
+
+.grad-end-done {
+    stop-color:#6c9768;
 }
 
 .block-language-gantt .dependencies path.done {
@@ -125,6 +141,14 @@
     fill: #2378a0;
 }
 
+.grad-start-pending {
+    stop-color:#2378a0;
+}
+
+.grad-end-pending {
+    stop-color:#5d8597;
+}
+
 .block-language-gantt .dependencies path.pending {
     stroke: #2378a0;
 }
@@ -133,6 +157,14 @@
 .block-language-gantt .milestones rect.critical,
 .block-language-gantt .dependencies path.arrow-head.critical {
     fill: #a02323;
+}
+
+.grad-start-critical {
+    stop-color:#a02323;
+}
+
+.grad-end-critical {
+    stop-color:#996969;
 }
 
 .block-language-gantt .dependencies path.critical {
