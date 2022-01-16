@@ -9,7 +9,7 @@ The gantt plugin generates a SVG image of a gantt chart complete with tasks, mil
 Option Title My Gantt Chart!
 
 Group This is a Group
-Task task 1, t1, , 01-01-2022, 2M
+Task task 1, t1, , 01/01/2022, 2M
 Task task 2, t2, done, after t1, 1M
 ```
 ````
@@ -66,18 +66,18 @@ You can organize your tasks by group. All tasks and milestones defined after thi
 Option Title My Gantt Chart!
 
 Group This is a Group
-Task task 1, t1, , 01-01-2022, 2M
+Task task 1, t1, , 01/01/2022, 2M
 Task task 2, t2, , after t1, 1M
 
-Group This is another \nGroup
+Group This is another Group
 Task task 3, t3, , after t1, 2W
-Milestone important \nmilestone, m1, , after t3
+Milestone important milestone, m1, , after t3
 ```
 ````
 
 ![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/group.svg)
 
-> ❗ Important: If the title of a **group**, **task** or **milestone** appear too long, you can inster a line break using the symbol **\n** as used on the example above.
+> ❗ Important: If the title of a **group**, **task** or **milestone** appear too long, the system will automatically break the title. However, you can manually insert a line break using the symbol **\n** as used on the example above.
 ## Tasks
 
 ### Definition
@@ -98,12 +98,12 @@ The class can be a user-defined CSS class. By default, 4 class are defined, repr
 option dependencies On
 
 Group Harry's Tasks
-Task My Task,                          t1,           done, 01-01-2022, 2M
+Task My Task,                          t1,           done, 01/01/2022, 2M
 
 Group Karine's Tasks
-Task My Other Task #3342,                t2, in-progress,        after t1, 06-30-2022
+Task My Other Task #3342,                t2, in-progress,        after t1, 06/30/2022
 Task Task With Dependency,  d3,         critical, 2W after t1, 5W, t1
-Task Task With Progress      ,  tp1,    pending , 01-01-2022, 3M,      ,0% 
+Task Task With Progress      ,  tp1,    pending , 01/01/2022, 3M,      ,0% 
 
 ```
 ````
