@@ -1,13 +1,15 @@
 import {Group, GanttInfo, EventType} from "./ganttDb";
 import * as Enumerable from "linq-es2015"; 
 import * as d3 from 'd3';
+import { DateTime } from "luxon";
 
 export class Renderer{
     static KEYWORD_AXISTICKS = "axisticks";
     static KEYWORD_TITLE = "title";
     static KEYWORD_TODAYMARKER = "todaymarker";
     static KEYWORD_DEPENDENCIES = "dependencies";
-    static KEYWORD_DATEFORMAT = "dateformat";
+    static KEYWORD_INPUTDATEFORMAT = "inputdateformat";
+    static KEYWORD_OUTPUTDATEFORMAT = "outputdateformat";
     static KEYWORD_BUSINESSDAYS = "businessdays";
 
     ganttInfo: GanttInfo;
@@ -121,9 +123,10 @@ export class Renderer{
         const bottom_scale = d3.scaleTime().domain([this.startDate, this.endDate]).range([this.width*this.groupColumnSize, this.width * this.widthScale]);
         const axis_bottom = d3.axisBottom(bottom_scale).ticks(bottom_ticks);
 
-        if(this.ganttInfo.renderOptions.options.has(Renderer.KEYWORD_DATEFORMAT)){
+        if(this.ganttInfo.renderOptions.options.has(Renderer.KEYWORD_OUTPUTDATEFORMAT)){
             axis_bottom.tickFormat((d) => 
-                d.toLocaleString(this.ganttInfo.renderOptions.options.get(Renderer.KEYWORD_DATEFORMAT) as string, {dateStyle: "short"}));
+                DateTime.fromJSDate(d as Date).toFormat(this.ganttInfo.renderOptions.options.get(Renderer.KEYWORD_OUTPUTDATEFORMAT) as string)
+            )
         }
 
         svg.append("g")
@@ -457,7 +460,7 @@ export class Renderer{
 
         const urlRegEx = new RegExp("(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)");
         const obsidianRegexp = new RegExp("obsidian:\\/\\/open?\\b([-a-zA-Z0-9()!@:%_\\+.~#?&\\/\\/=]*)");
-        if(!urlRegEx.test(event.URL) || !obsidianRegexp.test(event.URL)) throw new Error("Error generating event. The URL is incorrect '" + event.URL + "'");
+        if((!urlRegEx.test(event.URL)) && (!obsidianRegexp.test(event.URL))) throw new Error("Error generating event. The URL is incorrect '" + event.URL + "'");
         if(event.Type == EventType.GoTo) return "document.location=\"" + event.URL + "\"";
 
         if(event.Type == EventType.Popup) return "alert(\"Popup not supported yet.\")";

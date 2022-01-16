@@ -1,6 +1,7 @@
 import * as Enumerable from "linq-es2015"; 
 import {Task, Group, Milestone, GanttInfo, Event, EventType} from "./ganttDb";
 import { Renderer } from "./render";
+import { DateTime } from "luxon";
 
 export class Parser{
 
@@ -22,7 +23,10 @@ export class Parser{
 
     constructor(){
         this.ganttInfo = new GanttInfo();
+        //default options
         this.ParseOption(Renderer.KEYWORD_BUSINESSDAYS + " Off");
+        this.ParseOption(Renderer.KEYWORD_INPUTDATEFORMAT + " MM/DD/YYYY");
+        this.ParseOption(Renderer.KEYWORD_OUTPUTDATEFORMAT + " MM/DD/YYYY");
     }
 
     Parse(text:string):GanttInfo{
@@ -146,7 +150,11 @@ export class Parser{
     }
 
     ParseDate(date_str:string): Date{
-        if(!date_str.contains(Parser.KEYWORD_AFTER) && !date_str.startsWith(Parser.KEYWORD_AFTER.trim())) return new Date(date_str);
+        if(!date_str.contains(Parser.KEYWORD_AFTER) && !date_str.startsWith(Parser.KEYWORD_AFTER.trim()))
+            return DateTime.fromFormat(
+                date_str, 
+                this.ganttInfo.renderOptions.options.get(Renderer.KEYWORD_INPUTDATEFORMAT) as string
+            ).toJSDate();
 
         let elements:Array<string>;
         if(date_str.startsWith(Parser.KEYWORD_AFTER.trim())){
