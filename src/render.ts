@@ -166,6 +166,12 @@ export class Renderer{
                     .attr("width", this.width)
                     .attr("class", (g) => g.get("class") as string);
 
+        groups.forEach((t) => {
+            const maxTextWidth: number = this.width*this.groupColumnSize/8;
+            const name: string = t.get("name") as string;
+            t.set("name", this.InsertLineBreaks(name, maxTextWidth));
+        });
+
         const texts = svg.append("g")
                 .attr("class", "group-block-label")
                 .selectAll("text")
@@ -197,6 +203,10 @@ export class Renderer{
     }
 
     RenderTasks(svg: d3.Selection<SVGSVGElement, undefined, null, undefined>, tasks: Array<Map<string, unknown>>):void{
+        const width = (t: Map<string, unknown>) => {
+            return (this.DateToPosition(t.get("end") as Date) - this.DateToPosition(t.get("start") as Date))*this.width*(1-this.groupColumnSize);
+        };
+
         svg.append("g")
             .attr("class", "tasks")
             .selectAll("rect")
@@ -207,11 +217,17 @@ export class Renderer{
                 .attr("data-progress", (t) => t.get("progress") as string)
                 .attr("x", (t) => this.DateToPosition(t.get("start") as Date)*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize)
                 .attr("y", (t) => (t.get("position") as number + 1)/(this.numberOfItems+2)*this.height + this.taskpadding)
-                .attr("width", (t) => (this.DateToPosition(t.get("end") as Date) - this.DateToPosition(t.get("start") as Date))*this.width*(1-this.groupColumnSize))
+                .attr("width", (t) => (width(t)))
                 .attr("height", this.taskHeight - 2*this.taskpadding)
                 .attr("rx", 10)
                 .attr("ry", 10)
                 .attr("onclick", (t) => this.BuildOnclickEvent(t.get("ID") as string));
+        
+        tasks.forEach((t) => {
+            const maxTextWidth: number = width(t)/6;
+            const name: string = t.get("name") as string;
+            t.set("name", this.InsertLineBreaks(name, maxTextWidth));
+        });
         
         const x = (t: Map<string, unknown>) => {
             return (this.DateToPosition(t.get("end") as Date) + this.DateToPosition(t.get("start") as Date))/2.0*this.width*(1-this.groupColumnSize) + this.width*this.groupColumnSize;
@@ -466,6 +482,28 @@ export class Renderer{
         if(event.Type == EventType.Popup) return "alert(\"Popup not supported yet.\")";
 
         throw new Error("Event Type '" + event.Type + "' Not yet supported.");
+    }
+
+    InsertLineBreaks(name:string, maxTextWidth: number): string{
+        const lines: number = Math.ceil(name.length/maxTextWidth);
+        const nameParts: Array<string> = [];
+        for (let i = 0; i < lines; i++) {
+            const namePart = name.substring(i*maxTextWidth, (i+1)*maxTextWidth);
+            const index = namePart.lastIndexOf(" ");
+            
+            if(i+1==lines){
+                nameParts.push(namePart);
+            }else if(index==-1){
+                nameParts.push(namePart + "\\n");
+            }else{
+                nameParts.push(
+                    namePart.substring(0,index) + 
+                    "\\n" +
+                    namePart.substring(index+1,namePart.length)
+                )
+            }
+        }
+        return nameParts.join("");
     }
 }
 
