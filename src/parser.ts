@@ -23,7 +23,10 @@ export class Parser{
 
     constructor(){
         this.ganttInfo = new GanttInfo();
-        //default options
+        this.InitDefaultOptions();
+    }
+
+    InitDefaultOptions(): void{
         this.ParseOption(Renderer.KEYWORD_BUSINESSDAYS + " Off");
         this.ParseOption(Renderer.KEYWORD_INPUTDATEFORMAT + " MM/dd/yyyy");
         this.ParseOption(Renderer.KEYWORD_OUTPUTDATEFORMAT + " MM/dd/yyyy");
