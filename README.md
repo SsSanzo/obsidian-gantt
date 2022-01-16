@@ -1,4 +1,4 @@
-![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/main.svg)
+![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/main.png)
 
 # Usage
 
@@ -14,7 +14,7 @@ Task task 2, t2, done, after t1, 1M
 ```
 ````
 
-![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/usage.svg)
+![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/usage.png)
 > ℹ️ The keywords are **not** case-sensitive.
 
 ## Options
@@ -75,7 +75,7 @@ Milestone important milestone, m1, , after t3
 ```
 ````
 
-![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/group.svg)
+![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/group.png)
 
 > ❗ Important: If the title of a **group**, **task** or **milestone** appear too long, the system will automatically break the title. However, you can manually insert a line break using the symbol **\n** as used on the example above.
 ## Tasks
@@ -108,7 +108,7 @@ Task Task With Progress      ,  tp1,    pending , 01/01/2022, 3M,      ,0%
 ```
 ````
 
-![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/task.svg)
+![](https://raw.githubusercontent.com/SsSanzo/obsidian-gantt/master/screenshots/task.png)
 
 ### Timing
 Start date and end date may be either absolute, relative or a duratin.
