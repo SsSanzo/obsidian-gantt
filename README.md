@@ -40,6 +40,21 @@ Displays the dependencies
 **Default value**: Off
 > 💻 Format: **option** **dependencies** On
 
+### Input Date Formats
+Customize the format of the dates written in the markdown script. Refer to [Luxon format](https://moment.github.io/luxon/#/formatting?id=table-of-tokens) for the detailed format.
+**Default value**: MM/dd/yyyy
+> 💻 Format: **option** **inputdateformat** dd-MM-yyyy
+
+### Output Date Formats
+Customize the format of the dates dispayed on the chart. Refer to [Luxon format](https://moment.github.io/luxon/#/formatting?id=table-of-tokens) for the detailed format.
+**Default value**: MM/dd/yyyy
+> 💻 Format: **option** **outputdateformat** dd-MM-yyyy
+
+### Use Business Days
+When calculating durations and delayed start using the *days* unit, this skips weekends.
+**Default value**: Off
+> 💻 Format: **option** **businessdays** On
+
 ## Groups
 This is optional.
 You can organize your tasks by group. All tasks and milestones defined after this group will be part of it until another group is defined.
@@ -106,7 +121,7 @@ Start date and end date may be either absolute, relative or a duratin.
 
 
 #### Absolute Date
-The system automatically recognizes the date format automatically. These formats are [IETF-compliant RFC 2822 timestamps](https://datatracker.ietf.org/doc/html/rfc2822#page-14), and also strings in a [version of ISO8601](https://www.ecma-international.org/ecma-262/11.0/#sec-date.parse).
+The date format must conform to the format defined by the option **Input Date Formats**. By default MM/dd/yyyy.
 
 #### Relative Date
 A relative date is calculated on the fly using a delay after the end date of a **previously defined task or milestone**. The delay is optional. If the delay is not specified, the system assumes a delay of *0D*. The delay format follows the same rules as the duration below.
@@ -143,8 +158,7 @@ The dependency inherit the class (i.e. color and style) from the originating tas
 > ⚠️ Warning: If the task depends on another task defined in the future, the link will not be displayed
 
 ### Progress
-The progress is simply a percentage number. As of now, the progress is purely informative. It is planned to make it visual.
-
+The progress is simply a percentage number. It displays as the box filling like a progress bar.
 
 ## Milestones
 A Milestone is similar to a task but do not have an end date. The milestone follows the same concepts as the task.

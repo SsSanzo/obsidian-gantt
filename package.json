@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-gantt",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Gantt Graph",
 	"main": "main.js",
 	"scripts": {
