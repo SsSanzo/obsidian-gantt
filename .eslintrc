@@ -1,6 +1,7 @@
 {
     "root": true,
     "parser": "@typescript-eslint/parser",
+    "env": { "node": true },
     "plugins": [
       "@typescript-eslint"
     ],
@@ -8,7 +9,7 @@
       "eslint:recommended",
       "plugin:@typescript-eslint/eslint-recommended",
       "plugin:@typescript-eslint/recommended"
-    ], 
+    ],
     "parserOptions": {
         "sourceType": "module"
     },
@@ -18,5 +19,5 @@
       "@typescript-eslint/ban-ts-comment": "off",
       "no-prototype-builtins": "off",
       "@typescript-eslint/no-empty-function": "off"
-    } 
+    }
   }
